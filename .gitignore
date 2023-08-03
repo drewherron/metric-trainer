@@ -1,0 +1,28 @@
+# Compiled binaries
+metric-trainer
+*.o
+*.exe
+*SECRET*
+
+# Debug files
+*.dSYM/
+*.gdb
+
+# Build artifacts
+*.a
+*.so
+
+# IDE/Editor files
+.vscode/
+.vs/
+*.swp
+*.swo
+*~
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
