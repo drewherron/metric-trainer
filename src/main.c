@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "questions.h"
 
 void show_menu(void) {
     printf("Metric Trainer - Metric Conversion Practice\n");

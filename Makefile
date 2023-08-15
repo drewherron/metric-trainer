@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -O2
 TARGET = metric-trainer
 SRCDIR = src
-SOURCES = $(SRCDIR)/main.c
+SOURCES = $(SRCDIR)/main.c $(SRCDIR)/questions.c
 OBJECTS = $(SOURCES:.c=.o)
 
 .PHONY: all clean debug
