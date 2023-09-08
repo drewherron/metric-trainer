@@ -12,9 +12,51 @@ void init_categories(category_selection_t *selection) {
 }
 
 bool parse_category_input(const char *input, category_selection_t *selection) {
-    // TODO: Implement category parsing
-    printf("DEBUG: parse_category_input called with '%s'\n", input);
-    return false;
+    init_categories(selection);
+    
+    if (strcmp(input, "all") == 0) {
+        // Enable all categories
+        for (int i = 0; i < CATEGORY_COUNT; i++) {
+            selection->active[i] = true;
+        }
+        selection->num_active = CATEGORY_COUNT;
+        return true;
+    }
+    
+    // Parse individual characters
+    for (int i = 0; input[i] != '\0'; i++) {
+        switch (input[i]) {
+            case 'a':
+                if (!selection->active[CATEGORY_DISTANCE]) {
+                    selection->active[CATEGORY_DISTANCE] = true;
+                    selection->num_active++;
+                }
+                break;
+            case 'b':
+                if (!selection->active[CATEGORY_WEIGHT]) {
+                    selection->active[CATEGORY_WEIGHT] = true;
+                    selection->num_active++;
+                }
+                break;
+            case 'c':
+                if (!selection->active[CATEGORY_TEMPERATURE]) {
+                    selection->active[CATEGORY_TEMPERATURE] = true;
+                    selection->num_active++;
+                }
+                break;
+            case 'd':
+                if (!selection->active[CATEGORY_VOLUME]) {
+                    selection->active[CATEGORY_VOLUME] = true;
+                    selection->num_active++;
+                }
+                break;
+            default:
+                // Invalid character
+                return false;
+        }
+    }
+    
+    return selection->num_active > 0;
 }
 
 question_t generate_question(const category_selection_t *selection) {

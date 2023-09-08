@@ -75,36 +75,36 @@ int main(void) {
             }
         }
         
-        printf("You entered: '%s'\n", user_input);
-        
-        // Basic validation - check if input contains only valid characters
-        bool valid_input = true;
-        for (int i = 0; user_input[i]; i++) {
-            if (user_input[i] != 'a' && user_input[i] != 'b' && 
-                user_input[i] != 'c' && user_input[i] != 'd' &&
-                strcmp(user_input, "all") != 0) {
-                if (strlen(user_input) > 3 || strcmp(user_input, "all") != 0) {
-                    valid_input = false;
-                    break;
-                }
-            }
-        }
-        
-        // Handle special cases
+        // Handle special cases first
         if (strcmp(user_input, "quit") == 0 || strcmp(user_input, "exit") == 0) {
             printf("Goodbye!\n");
             break;
-        } else if (strcmp(user_input, "all") == 0) {
-            printf("Selected: All categories\n");
-            break;  // For now, just exit after selection
-        } else if (strlen(user_input) == 1 && strchr("abcd", user_input[0])) {
-            printf("Selected: Category %c\n", user_input[0]);
-            break;  // For now, just exit after selection
-        } else if (valid_input && strlen(user_input) > 1) {
-            printf("Selected multiple categories: %s\n", user_input);
-            break;  // For now, just exit after selection
+        }
+        
+        // Try to parse the category selection
+        category_selection_t selection;
+        if (parse_category_input(user_input, &selection)) {
+            printf("Selected categories:\n");
+            
+            if (selection.active[CATEGORY_DISTANCE]) {
+                printf("  ✓ Distance (miles ↔ km, inches ↔ cm)\n");
+            }
+            if (selection.active[CATEGORY_WEIGHT]) {
+                printf("  ✓ Weight (pounds ↔ kg)\n");
+            }
+            if (selection.active[CATEGORY_TEMPERATURE]) {
+                printf("  ✓ Temperature (Celsius ↔ Fahrenheit)\n");
+            }
+            if (selection.active[CATEGORY_VOLUME]) {
+                printf("  ✓ Volume (gallons ↔ liters)\n");
+            }
+            
+            printf("\nTotal: %d categories selected\n", selection.num_active);
+            printf("(Practice session will start here in future steps)\n");
+            break;  // For now, just exit after successful selection
         } else {
-            printf("Invalid input. Please enter 'a', 'b', 'c', 'd', 'all', or combinations like 'ac'.\n");
+            printf("Invalid input: '%s'\n", user_input);
+            printf("Please enter 'a', 'b', 'c', 'd', 'all', or combinations like 'ac'.\n");
             printf("You can also type 'quit' to exit.\n\n");
         }
     }
