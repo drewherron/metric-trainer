@@ -14,6 +14,11 @@ void init_categories(category_selection_t *selection) {
 bool parse_category_input(const char *input, category_selection_t *selection) {
     init_categories(selection);
     
+    // Handle empty input
+    if (input == NULL || input[0] == '\0') {
+        return false;
+    }
+    
     if (strcmp(input, "all") == 0) {
         // Enable all categories
         for (int i = 0; i < CATEGORY_COUNT; i++) {
@@ -23,7 +28,8 @@ bool parse_category_input(const char *input, category_selection_t *selection) {
         return true;
     }
     
-    // Parse individual characters
+    // Parse individual characters in the input string
+    // This allows combinations like "ac", "bd", "abcd", etc.
     for (int i = 0; input[i] != '\0'; i++) {
         switch (input[i]) {
             case 'a':
@@ -51,11 +57,12 @@ bool parse_category_input(const char *input, category_selection_t *selection) {
                 }
                 break;
             default:
-                // Invalid character
+                // Invalid character found - reject the entire input
                 return false;
         }
     }
     
+    // Must have selected at least one category
     return selection->num_active > 0;
 }
 
