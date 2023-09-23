@@ -15,7 +15,7 @@ void show_menu(void) {
     printf("  c) Temperature  (Celsius ↔ Fahrenheit)\n");
     printf("  d) Volume       (gallons ↔ liters)\n");
     printf("  all) All categories\n\n");
-    printf("Enter choice (e.g., \"b\", \"all\", or \"ac\"): ");
+    printf("Enter choice (e.g., \"b\", \"all\", \"ac\", or \"help\"): ");
     fflush(stdout);
 }
 
@@ -28,6 +28,16 @@ char* get_user_input(void) {
         if (len > 0 && input[len - 1] == '\n') {
             input[len - 1] = '\0';
         }
+        
+        // Handle input that was too long (no newline found and buffer full)
+        if (len == MAX_INPUT_LENGTH - 1 && input[len - 1] != '\0') {
+            // Clear the rest of the input line
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF);
+            printf("Input too long. Maximum length is %d characters.\n", MAX_INPUT_LENGTH - 1);
+            return NULL;
+        }
+        
         return input;
     }
     return NULL;
@@ -62,8 +72,14 @@ int main(void) {
         
         user_input = get_user_input();
         if (user_input == NULL) {
-            printf("Error reading input.\n");
-            break;
+            // get_user_input() already printed error message if needed
+            // For EOF, exit gracefully
+            if (feof(stdin)) {
+                printf("\nGoodbye!\n");
+                break;
+            }
+            // For other errors or too-long input, continue the loop
+            continue;
         }
         
         trim_whitespace(user_input);
@@ -79,6 +95,23 @@ int main(void) {
         if (strcmp(user_input, "quit") == 0 || strcmp(user_input, "exit") == 0) {
             printf("Goodbye!\n");
             break;
+        } else if (strcmp(user_input, "help") == 0 || strcmp(user_input, "h") == 0 || strcmp(user_input, "?") == 0) {
+            printf("\nHelp - Valid Input Options:\n");
+            printf("─────────────────────────────\n");
+            printf("Categories (select one or more):\n");
+            printf("  a = Distance     (miles ↔ km, inches ↔ cm)\n");
+            printf("  b = Weight       (pounds ↔ kg)\n");
+            printf("  c = Temperature  (Celsius ↔ Fahrenheit)\n");
+            printf("  d = Volume       (gallons ↔ liters)\n\n");
+            printf("Special options:\n");
+            printf("  all   = Select all categories\n");
+            printf("  help  = Show this help message\n");
+            printf("  quit  = Exit the program\n\n");
+            printf("Examples:\n");
+            printf("  a     = Distance only\n");
+            printf("  ac    = Distance and Temperature\n");
+            printf("  abcd  = All categories (same as 'all')\n\n");
+            continue;
         }
         
         // Try to parse the category selection
@@ -104,8 +137,11 @@ int main(void) {
             break;  // For now, just exit after successful selection
         } else {
             printf("Invalid input: '%s'\n", user_input);
-            printf("Please enter 'a', 'b', 'c', 'd', 'all', or combinations like 'ac'.\n");
-            printf("You can also type 'quit' to exit.\n\n");
+            printf("Valid options:\n");
+            printf("  • Single categories: 'a', 'b', 'c', 'd'\n");
+            printf("  • Combinations: 'ac', 'bd', 'abc', etc.\n");
+            printf("  • All categories: 'all'\n");
+            printf("  • Exit: 'quit' or 'exit'\n\n");
         }
     }
     
