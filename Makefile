@@ -10,7 +10,7 @@ OBJECTS = $(SOURCES:.c=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(TARGET)
+	$(CC) $(OBJECTS) -lm -o $(TARGET)
 
 $(SRCDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@

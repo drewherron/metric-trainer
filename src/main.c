@@ -65,6 +65,9 @@ void trim_whitespace(char *str) {
 int main(void) {
     char *user_input;
     
+    // Initialize random number generator
+    init_random_seed();
+    
     printf("Welcome to Metric Trainer!\n");
     
     while (1) {

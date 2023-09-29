@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 void init_categories(category_selection_t *selection) {
     for (int i = 0; i < CATEGORY_COUNT; i++) {
@@ -89,4 +90,69 @@ void print_session_summary(const session_stats_t *stats) {
     // TODO: Implement session summary display
     printf("DEBUG: print_session_summary called\n");
     printf("Session complete! (Summary functionality coming soon)\n");
+}
+
+void init_random_seed(void) {
+    static bool initialized = false;
+    if (!initialized) {
+        srand((unsigned int)time(NULL));
+        initialized = true;
+    }
+}
+
+float generate_random_value(float min, float max) {
+    if (min >= max) {
+        return min;
+    }
+    
+    // Generate a random float between min and max
+    float range = max - min;
+    float random_fraction = (float)rand() / (float)RAND_MAX;
+    return min + (random_fraction * range);
+}
+
+float round_to_precision(float value, int decimal_places) {
+    float multiplier = powf(10.0f, (float)decimal_places);
+    return roundf(value * multiplier) / multiplier;
+}
+
+// Basic conversion functions (placeholders for now)
+float miles_to_km(float miles) {
+    return miles * 1.609344f;
+}
+
+float km_to_miles(float km) {
+    return km / 1.609344f;
+}
+
+float inches_to_cm(float inches) {
+    return inches * 2.54f;
+}
+
+float cm_to_inches(float cm) {
+    return cm / 2.54f;
+}
+
+float pounds_to_kg(float pounds) {
+    return pounds * 0.453592f;
+}
+
+float kg_to_pounds(float kg) {
+    return kg / 0.453592f;
+}
+
+float fahrenheit_to_celsius(float fahrenheit) {
+    return (fahrenheit - 32.0f) * 5.0f / 9.0f;
+}
+
+float celsius_to_fahrenheit(float celsius) {
+    return celsius * 9.0f / 5.0f + 32.0f;
+}
+
+float gallons_to_liters(float gallons) {
+    return gallons * 3.78541f;
+}
+
+float liters_to_gallons(float liters) {
+    return liters / 3.78541f;
 }
