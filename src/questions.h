@@ -102,6 +102,7 @@ void print_session_summary(const session_stats_t *stats);
 
 // Utility functions
 const conversion_info_t* get_conversions_for_category(category_t category, int *count);
+category_t pick_random_category(const category_selection_t *selection);
 float generate_random_value(float min, float max);
 float round_to_precision(float value, int decimal_places);
 void init_random_seed(void);

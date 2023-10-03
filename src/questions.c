@@ -69,16 +69,72 @@ bool parse_category_input(const char *input, category_selection_t *selection) {
 
 question_t generate_question(const category_selection_t *selection) {
     question_t q = {0};
-    // TODO: Implement question generation
-    printf("DEBUG: generate_question called\n");
-    strcpy(q.question_text, "Placeholder question");
+    
+    // Ensure we have at least one active category
+    if (selection->num_active == 0) {
+        strcpy(q.question_text, "Error: No categories selected");
+        return q;
+    }
+    
+    // Pick a random active category
+    category_t chosen_category = pick_random_category(selection);
+    
+    // Get available conversions for this category  
+    int conversion_count = 0;
+    const conversion_info_t *conversions = get_conversions_for_category(chosen_category, &conversion_count);
+    
+    if (conversion_count == 0) {
+        strcpy(q.question_text, "Error: No conversions available");
+        return q;
+    }
+    
+    // Pick a random conversion from this category
+    int conversion_index = rand() % conversion_count;
+    const conversion_info_t *conv = &conversions[conversion_index];
+    
+    // Generate a random value within the conversion's range
+    float value = generate_random_value(conv->min_value, conv->max_value);
+    value = round_to_precision(value, 1); // Round to 1 decimal place for cleaner questions
+    
+    // Calculate the correct answer
+    float answer = conv->convert_func(value);
+    answer = round_to_precision(answer, 2); // Allow more precision in answers
+    
+    // Calculate tolerance for this question
+    float tolerance = answer * (conv->tolerance_percent / 100.0f);
+    if (tolerance < 0.1f) tolerance = 0.1f; // Minimum tolerance
+    
+    // Fill in the question structure
+    q.category = chosen_category;
+    q.value = value;
+    q.correct_answer = answer;
+    q.tolerance = tolerance;
+    strcpy(q.from_unit, conv->from_unit);
+    strcpy(q.to_unit, conv->to_unit);
+    
+    // Format the question text
+    snprintf(q.question_text, MAX_QUESTION_TEXT,
+             "Convert %.1f %s to %s: ",
+             value, conv->from_unit, conv->to_unit);
+    
     return q;
 }
 
 bool check_answer(const question_t *question, float user_answer) {
-    // TODO: Implement answer checking with tolerance
-    printf("DEBUG: check_answer called with %.2f\n", user_answer);
-    return false;
+    float difference = fabsf(user_answer - question->correct_answer);
+    bool is_correct = difference <= question->tolerance;
+    
+    printf("Your answer: %.2f, Correct answer: %.2f (tolerance: ±%.2f)\n", 
+           user_answer, question->correct_answer, question->tolerance);
+    
+    if (is_correct) {
+        printf("✓ Correct!\n");
+    } else {
+        printf("✗ Incorrect. The correct answer is %.2f %s\n", 
+               question->correct_answer, question->to_unit);
+    }
+    
+    return is_correct;
 }
 
 void update_stats(session_stats_t *stats, const question_t *question, bool correct) {
@@ -155,4 +211,102 @@ float gallons_to_liters(float gallons) {
 
 float liters_to_gallons(float liters) {
     return liters / 3.78541f;
+}
+
+// Helper function to pick a random active category
+category_t pick_random_category(const category_selection_t *selection) {
+    if (selection->num_active == 0) {
+        return CATEGORY_DISTANCE; // Fallback
+    }
+    
+    // Create array of active category indices
+    category_t active_categories[CATEGORY_COUNT];
+    int count = 0;
+    
+    for (int i = 0; i < CATEGORY_COUNT; i++) {
+        if (selection->active[i]) {
+            active_categories[count++] = (category_t)i;
+        }
+    }
+    
+    // Pick a random one
+    int random_index = rand() % count;
+    return active_categories[random_index];
+}
+
+// Define conversion data for each category (basic implementation)
+static const conversion_info_t distance_conversions[] = {
+    {
+        "miles", "mi", "kilometers", "km", 
+        miles_to_km, 1.0f, 100.0f, 2.0f
+    },
+    {
+        "kilometers", "km", "miles", "mi", 
+        km_to_miles, 1.0f, 100.0f, 2.0f
+    },
+    {
+        "inches", "in", "centimeters", "cm", 
+        inches_to_cm, 1.0f, 50.0f, 1.0f
+    },
+    {
+        "centimeters", "cm", "inches", "in", 
+        cm_to_inches, 1.0f, 100.0f, 1.0f
+    }
+};
+
+static const conversion_info_t weight_conversions[] = {
+    {
+        "pounds", "lb", "kilograms", "kg", 
+        pounds_to_kg, 1.0f, 200.0f, 2.0f
+    },
+    {
+        "kilograms", "kg", "pounds", "lb", 
+        kg_to_pounds, 1.0f, 100.0f, 2.0f
+    }
+};
+
+static const conversion_info_t temperature_conversions[] = {
+    {
+        "degrees Fahrenheit", "°F", "degrees Celsius", "°C", 
+        fahrenheit_to_celsius, -20.0f, 120.0f, 2.0f
+    },
+    {
+        "degrees Celsius", "°C", "degrees Fahrenheit", "°F", 
+        celsius_to_fahrenheit, -30.0f, 50.0f, 2.0f
+    }
+};
+
+static const conversion_info_t volume_conversions[] = {
+    {
+        "gallons", "gal", "liters", "L", 
+        gallons_to_liters, 1.0f, 20.0f, 2.0f
+    },
+    {
+        "liters", "L", "gallons", "gal", 
+        liters_to_gallons, 1.0f, 50.0f, 2.0f
+    }
+};
+
+const conversion_info_t* get_conversions_for_category(category_t category, int *count) {
+    switch (category) {
+        case CATEGORY_DISTANCE:
+            *count = sizeof(distance_conversions) / sizeof(distance_conversions[0]);
+            return distance_conversions;
+            
+        case CATEGORY_WEIGHT:
+            *count = sizeof(weight_conversions) / sizeof(weight_conversions[0]);
+            return weight_conversions;
+            
+        case CATEGORY_TEMPERATURE:
+            *count = sizeof(temperature_conversions) / sizeof(temperature_conversions[0]);
+            return temperature_conversions;
+            
+        case CATEGORY_VOLUME:
+            *count = sizeof(volume_conversions) / sizeof(volume_conversions[0]);
+            return volume_conversions;
+            
+        default:
+            *count = 0;
+            return NULL;
+    }
 }
