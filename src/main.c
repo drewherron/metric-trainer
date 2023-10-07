@@ -5,6 +5,9 @@
 
 #define MAX_INPUT_LENGTH 32
 
+// Function prototypes
+void run_practice_session(const category_selection_t *selection);
+
 void show_menu(void) {
     printf("\n");
     printf("Metric Trainer - Metric Conversion Practice\n");
@@ -60,6 +63,56 @@ void trim_whitespace(char *str) {
     while (len > 0 && (str[len - 1] == ' ' || str[len - 1] == '\t')) {
         str[--len] = '\0';
     }
+}
+
+void run_practice_session(const category_selection_t *selection) {
+    session_stats_t stats = {0}; // Initialize statistics
+    float user_answer;
+    bool continue_session = true;
+    
+    printf("Practice Session Started!\n");
+    printf("─────────────────────────\n");
+    printf("• Enter a number to answer questions\n");
+    printf("• Type 'skip' to skip a question\n");
+    printf("• Type 'quit' or 'exit' to end the session\n\n");
+    
+    while (continue_session) {
+        // Generate a new question
+        question_t question = generate_question(selection);
+        
+        // Check if question generation failed
+        if (strstr(question.question_text, "Error:") != NULL) {
+            printf("%s\n", question.question_text);
+            break;
+        }
+        
+        // Display the question
+        printf("%s", question.question_text);
+        
+        // Get user's answer
+        if (get_numeric_answer(&user_answer)) {
+            // Check the answer and provide feedback
+            bool correct = check_answer(&question, user_answer);
+            
+            // Update statistics
+            update_stats(&stats, &question, correct);
+            
+            printf("\n");
+        } else {
+            // User chose to quit, skip, or there was an error
+            // get_numeric_answer() already handled the appropriate messages
+            // Check if user wants to quit (based on stdin EOF)
+            if (feof(stdin)) {
+                printf("\nSession ended.\n");
+                continue_session = false;
+            }
+            // For skip or other cases, just continue with next question
+            printf("\n");
+        }
+    }
+    
+    // Print session summary
+    print_session_summary(&stats);
 }
 
 int main(void) {
@@ -136,8 +189,9 @@ int main(void) {
             }
             
             printf("\nTotal: %d categories selected\n", selection.num_active);
-            printf("(Practice session will start here in future steps)\n");
-            break;  // For now, just exit after successful selection
+            printf("Starting practice session...\n\n");
+            run_practice_session(&selection);
+            break;  // Exit after practice session
         } else {
             printf("Invalid input: '%s'\n", user_input);
             printf("Valid options:\n");

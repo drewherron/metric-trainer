@@ -100,6 +100,10 @@ bool check_answer(const question_t *question, float user_answer);
 void update_stats(session_stats_t *stats, const question_t *question, bool correct);
 void print_session_summary(const session_stats_t *stats);
 
+// Answer input functions
+bool get_numeric_answer(float *answer);
+bool is_valid_number(const char *input);
+
 // Utility functions
 const conversion_info_t* get_conversions_for_category(category_t category, int *count);
 category_t pick_random_category(const category_selection_t *selection);

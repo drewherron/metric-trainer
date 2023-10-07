@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <ctype.h>
 
 void init_categories(category_selection_t *selection) {
     for (int i = 0; i < CATEGORY_COUNT; i++) {
@@ -309,4 +310,104 @@ const conversion_info_t* get_conversions_for_category(category_t category, int *
             *count = 0;
             return NULL;
     }
+}
+
+bool is_valid_number(const char *input) {
+    if (input == NULL || *input == '\0') {
+        return false;
+    }
+    
+    // Skip leading whitespace
+    const char *start = input;
+    while (*start && isspace(*start)) {
+        start++;
+    }
+    
+    // Check if only whitespace
+    if (*start == '\0') {
+        return false;
+    }
+    
+    char *endptr;
+    strtof(start, &endptr);
+    
+    // Check if the entire non-whitespace string was consumed
+    while (*endptr != '\0') {
+        if (!isspace(*endptr)) {
+            return false;
+        }
+        endptr++;
+    }
+    
+    return true;
+}
+
+bool get_numeric_answer(float *answer) {
+    static char input[64];
+    
+    printf("Your answer: ");
+    fflush(stdout);
+    
+    if (fgets(input, sizeof(input), stdin) != NULL) {
+        // Remove newline if present
+        size_t len = strlen(input);
+        if (len > 0 && input[len - 1] == '\n') {
+            input[len - 1] = '\0';
+        }
+        
+        // Handle too-long input
+        if (len == sizeof(input) - 1 && input[len - 1] != '\0') {
+            // Clear remaining input
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF);
+            printf("Input too long. Please enter a number.\n");
+            return false;
+        }
+        
+        // Trim whitespace
+        char *start = input;
+        while (*start && isspace(*start)) {
+            start++;
+        }
+        
+        char *end = start + strlen(start) - 1;
+        while (end > start && isspace(*end)) {
+            *end = '\0';
+            end--;
+        }
+        
+        // Check for empty input
+        if (*start == '\0') {
+            printf("Please enter a number.\n");
+            return false;
+        }
+        
+        // Check for special commands
+        if (strcmp(start, "quit") == 0 || strcmp(start, "exit") == 0) {
+            printf("Exiting practice session...\n");
+            return false;
+        }
+        
+        if (strcmp(start, "skip") == 0) {
+            printf("Skipping question...\n");
+            return false;
+        }
+        
+        // Validate and parse number
+        if (!is_valid_number(start)) {
+            printf("Invalid input. Please enter a valid number (e.g., 5.2, -3.14, 0.5).\n");
+            return false;
+        }
+        
+        *answer = strtof(start, NULL);
+        return true;
+    }
+    
+    // EOF or read error
+    if (feof(stdin)) {
+        printf("\nExiting...\n");
+    } else {
+        printf("Error reading input.\n");
+    }
+    return false;
 }
