@@ -13,7 +13,7 @@ void show_menu(void) {
     printf("Metric Trainer - Metric Conversion Practice\n");
     printf("==========================================\n\n");
     printf("Select categories:\n");
-    printf("  a) Distance     (miles ↔ km, inches ↔ cm)\n");
+    printf("  a) Distance     (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
     printf("  b) Weight       (pounds ↔ kg)\n");
     printf("  c) Temperature  (Celsius ↔ Fahrenheit)\n");
     printf("  d) Volume       (gallons ↔ liters)\n");
@@ -155,7 +155,7 @@ int main(void) {
             printf("\nHelp - Valid Input Options:\n");
             printf("─────────────────────────────\n");
             printf("Categories (select one or more):\n");
-            printf("  a = Distance     (miles ↔ km, inches ↔ cm)\n");
+            printf("  a = Distance     (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
             printf("  b = Weight       (pounds ↔ kg)\n");
             printf("  c = Temperature  (Celsius ↔ Fahrenheit)\n");
             printf("  d = Volume       (gallons ↔ liters)\n\n");
@@ -176,7 +176,7 @@ int main(void) {
             printf("Selected categories:\n");
             
             if (selection.active[CATEGORY_DISTANCE]) {
-                printf("  ✓ Distance (miles ↔ km, inches ↔ cm)\n");
+                printf("  ✓ Distance (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
             }
             if (selection.active[CATEGORY_WEIGHT]) {
                 printf("  ✓ Weight (pounds ↔ kg)\n");

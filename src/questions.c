@@ -173,7 +173,7 @@ float round_to_precision(float value, int decimal_places) {
     return roundf(value * multiplier) / multiplier;
 }
 
-// Basic conversion functions (placeholders for now)
+// Distance conversion functions
 float miles_to_km(float miles) {
     return miles * 1.609344f;
 }
@@ -188,6 +188,14 @@ float inches_to_cm(float inches) {
 
 float cm_to_inches(float cm) {
     return cm / 2.54f;
+}
+
+float feet_to_meters(float feet) {
+    return feet * 0.3048f;
+}
+
+float meters_to_feet(float meters) {
+    return meters / 0.3048f;
 }
 
 float pounds_to_kg(float pounds) {
@@ -235,7 +243,7 @@ category_t pick_random_category(const category_selection_t *selection) {
     return active_categories[random_index];
 }
 
-// Define conversion data for each category (basic implementation)
+// Complete distance conversion data with realistic ranges
 static const conversion_info_t distance_conversions[] = {
     {
         "miles", "mi", "kilometers", "km", 
@@ -243,15 +251,23 @@ static const conversion_info_t distance_conversions[] = {
     },
     {
         "kilometers", "km", "miles", "mi", 
-        km_to_miles, 1.0f, 100.0f, 2.0f
+        km_to_miles, 1.0f, 160.0f, 2.0f
     },
     {
         "inches", "in", "centimeters", "cm", 
-        inches_to_cm, 1.0f, 50.0f, 1.0f
+        inches_to_cm, 1.0f, 36.0f, 1.5f
     },
     {
         "centimeters", "cm", "inches", "in", 
-        cm_to_inches, 1.0f, 100.0f, 1.0f
+        cm_to_inches, 1.0f, 90.0f, 1.5f
+    },
+    {
+        "feet", "ft", "meters", "m", 
+        feet_to_meters, 1.0f, 50.0f, 2.0f
+    },
+    {
+        "meters", "m", "feet", "ft", 
+        meters_to_feet, 1.0f, 15.0f, 2.0f
     }
 };
 
