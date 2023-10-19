@@ -206,6 +206,14 @@ float kg_to_pounds(float kg) {
     return kg / 0.453592f;
 }
 
+float ounces_to_grams(float ounces) {
+    return ounces * 28.3495f;
+}
+
+float grams_to_ounces(float grams) {
+    return grams / 28.3495f;
+}
+
 float fahrenheit_to_celsius(float fahrenheit) {
     return (fahrenheit - 32.0f) * 5.0f / 9.0f;
 }
@@ -278,7 +286,15 @@ static const conversion_info_t weight_conversions[] = {
     },
     {
         "kilograms", "kg", "pounds", "lb", 
-        kg_to_pounds, 1.0f, 100.0f, 2.0f
+        kg_to_pounds, 1.0f, 90.0f, 2.0f
+    },
+    {
+        "ounces", "oz", "grams", "g", 
+        ounces_to_grams, 1.0f, 32.0f, 1.5f
+    },
+    {
+        "grams", "g", "ounces", "oz", 
+        grams_to_ounces, 1.0f, 900.0f, 1.5f
     }
 };
 
