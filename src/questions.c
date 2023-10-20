@@ -222,6 +222,14 @@ float celsius_to_fahrenheit(float celsius) {
     return celsius * 9.0f / 5.0f + 32.0f;
 }
 
+float celsius_to_kelvin(float celsius) {
+    return celsius + 273.15f;
+}
+
+float kelvin_to_celsius(float kelvin) {
+    return kelvin - 273.15f;
+}
+
 float gallons_to_liters(float gallons) {
     return gallons * 3.78541f;
 }
@@ -301,11 +309,19 @@ static const conversion_info_t weight_conversions[] = {
 static const conversion_info_t temperature_conversions[] = {
     {
         "degrees Fahrenheit", "°F", "degrees Celsius", "°C", 
-        fahrenheit_to_celsius, -20.0f, 120.0f, 2.0f
+        fahrenheit_to_celsius, 0.0f, 100.0f, 1.5f
     },
     {
         "degrees Celsius", "°C", "degrees Fahrenheit", "°F", 
-        celsius_to_fahrenheit, -30.0f, 50.0f, 2.0f
+        celsius_to_fahrenheit, -20.0f, 40.0f, 1.5f
+    },
+    {
+        "degrees Celsius", "°C", "Kelvin", "K", 
+        celsius_to_kelvin, -50.0f, 50.0f, 1.0f
+    },
+    {
+        "Kelvin", "K", "degrees Celsius", "°C", 
+        kelvin_to_celsius, 200.0f, 350.0f, 1.0f
     }
 };
 
