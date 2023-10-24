@@ -238,6 +238,14 @@ float liters_to_gallons(float liters) {
     return liters / 3.78541f;
 }
 
+float cups_to_ml(float cups) {
+    return cups * 236.588f;  // US cup to milliliters
+}
+
+float ml_to_cups(float ml) {
+    return ml / 236.588f;
+}
+
 // Helper function to pick a random active category
 category_t pick_random_category(const category_selection_t *selection) {
     if (selection->num_active == 0) {
@@ -332,7 +340,15 @@ static const conversion_info_t volume_conversions[] = {
     },
     {
         "liters", "L", "gallons", "gal", 
-        liters_to_gallons, 1.0f, 50.0f, 2.0f
+        liters_to_gallons, 1.0f, 75.0f, 2.0f
+    },
+    {
+        "cups", "cup", "milliliters", "ml", 
+        cups_to_ml, 0.5f, 8.0f, 1.5f
+    },
+    {
+        "milliliters", "ml", "cups", "cup", 
+        ml_to_cups, 100.0f, 2000.0f, 1.5f
     }
 };
 
