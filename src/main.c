@@ -16,7 +16,7 @@ void show_menu(void) {
     printf("  a) Distance     (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
     printf("  b) Weight       (pounds ↔ kg, ounces ↔ grams)\n");
     printf("  c) Temperature  (Celsius ↔ Fahrenheit, Celsius ↔ Kelvin)\n");
-    printf("  d) Volume       (gallons ↔ liters, cups ↔ ml)\n");
+    printf("  d) Volume       (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n");
     printf("  all) All categories\n\n");
     printf("Enter choice (e.g., \"b\", \"all\", \"ac\", or \"help\"): ");
     fflush(stdout);
@@ -158,7 +158,7 @@ int main(void) {
             printf("  a = Distance     (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
             printf("  b = Weight       (pounds ↔ kg, ounces ↔ grams)\n");
             printf("  c = Temperature  (Celsius ↔ Fahrenheit, Celsius ↔ Kelvin)\n");
-            printf("  d = Volume       (gallons ↔ liters, cups ↔ ml)\n\n");
+            printf("  d = Volume       (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n\n");
             printf("Special options:\n");
             printf("  all   = Select all categories\n");
             printf("  help  = Show this help message\n");
@@ -185,7 +185,7 @@ int main(void) {
                 printf("  ✓ Temperature (Celsius ↔ Fahrenheit, Celsius ↔ Kelvin)\n");
             }
             if (selection.active[CATEGORY_VOLUME]) {
-                printf("  ✓ Volume (gallons ↔ liters, cups ↔ ml)\n");
+                printf("  ✓ Volume (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n");
             }
             
             printf("\nTotal: %d categories selected\n", selection.num_active);

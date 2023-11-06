@@ -246,6 +246,22 @@ float ml_to_cups(float ml) {
     return ml / 236.588f;
 }
 
+float liters_to_fl_oz(float liters) {
+    return liters * 33.814f;  // Liters to fluid ounces
+}
+
+float fl_oz_to_liters(float fl_oz) {
+    return fl_oz / 33.814f;
+}
+
+float ml_to_fl_oz(float ml) {
+    return ml / 29.5735f;  // Milliliters to fluid ounces
+}
+
+float fl_oz_to_ml(float fl_oz) {
+    return fl_oz * 29.5735f;
+}
+
 // Helper function to pick a random active category
 category_t pick_random_category(const category_selection_t *selection) {
     if (selection->num_active == 0) {
@@ -349,6 +365,22 @@ static const conversion_info_t volume_conversions[] = {
     {
         "milliliters", "ml", "cups", "cup", 
         ml_to_cups, 100.0f, 2000.0f, 1.5f
+    },
+    {
+        "liters", "L", "fluid ounces", "fl oz", 
+        liters_to_fl_oz, 1.0f, 3.0f, 2.0f
+    },
+    {
+        "fluid ounces", "fl oz", "liters", "L", 
+        fl_oz_to_liters, 8.0f, 50.0f, 2.0f
+    },
+    {
+        "milliliters", "ml", "fluid ounces", "fl oz", 
+        ml_to_fl_oz, 200.0f, 1000.0f, 2.0f
+    },
+    {
+        "fluid ounces", "fl oz", "milliliters", "ml", 
+        fl_oz_to_ml, 4.0f, 16.0f, 2.0f
     }
 };
 
