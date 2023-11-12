@@ -124,15 +124,34 @@ question_t generate_question(const category_selection_t *selection) {
 bool check_answer(const question_t *question, float user_answer) {
     float difference = fabsf(user_answer - question->correct_answer);
     bool is_correct = difference <= question->tolerance;
+    float percent_error = (difference / question->correct_answer) * 100.0f;
     
     printf("Your answer: %.2f, Correct answer: %.2f (tolerance: ±%.2f)\n", 
            user_answer, question->correct_answer, question->tolerance);
     
     if (is_correct) {
-        printf("✓ Correct!\n");
+        printf("✓ Correct!");
+        if (difference > 0.01f) {
+            printf(" (%.1f%% error)", percent_error);
+        }
+        printf("\n");
     } else {
         printf("✗ Incorrect. The correct answer is %.2f %s\n", 
                question->correct_answer, question->to_unit);
+        
+        // Provide educational feedback based on how far off they were
+        if (percent_error < 10.0f) {
+            printf("💡 Very close! Check your decimal places or rounding.\n");
+        } else if (percent_error < 50.0f) {
+            printf("💡 You're in the right ballpark. Double-check your conversion factor.\n");
+        } else if (percent_error > 90.0f && percent_error < 110.0f) {
+            printf("💡 Hint: Did you convert in the wrong direction? (e.g., multiply instead of divide?)\n");
+        } else {
+            printf("💡 That's quite different. Make sure you're using the right conversion factor.\n");
+        }
+        
+        // Show percentage error for learning
+        printf("   Error: %.1f%% off target\n", percent_error);
     }
     
     return is_correct;
