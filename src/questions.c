@@ -158,14 +158,36 @@ bool check_answer(const question_t *question, float user_answer) {
 }
 
 void update_stats(session_stats_t *stats, const question_t *question, bool correct) {
-    // TODO: Implement statistics tracking
-    printf("DEBUG: update_stats called, correct=%s\n", correct ? "true" : "false");
+    // Update total question count
+    stats->total_questions++;
+    
+    // Update correct answer count
+    if (correct) {
+        stats->correct_answers++;
+    }
+    
+    // Update category-specific stats
+    stats->category_totals[question->category]++;
+    if (correct) {
+        stats->category_correct[question->category]++;
+    }
 }
 
 void print_session_summary(const session_stats_t *stats) {
-    // TODO: Implement session summary display
-    printf("DEBUG: print_session_summary called\n");
-    printf("Session complete! (Summary functionality coming soon)\n");
+    printf("Session Summary\n");
+    printf("===============\n");
+    
+    // Overall statistics
+    if (stats->total_questions > 0) {
+        float overall_percentage = (float)stats->correct_answers / stats->total_questions * 100.0f;
+        printf("Overall Performance: %d/%d correct (%.1f%%)\n", 
+               stats->correct_answers, stats->total_questions, overall_percentage);
+    } else {
+        printf("No questions answered this session.\n");
+        return;
+    }
+    
+    printf("\nThank you for practicing metric conversions!\n");
 }
 
 void init_random_seed(void) {
