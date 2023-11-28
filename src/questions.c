@@ -187,6 +187,34 @@ void print_session_summary(const session_stats_t *stats) {
         return;
     }
     
+    // Category-specific statistics
+    printf("\nCategory Breakdown:\n");
+    printf("-------------------\n");
+    
+    const char* category_names[] = {
+        "Distance",
+        "Weight", 
+        "Temperature",
+        "Volume"
+    };
+    
+    bool any_categories = false;
+    for (int i = 0; i < CATEGORY_COUNT; i++) {
+        if (stats->category_totals[i] > 0) {
+            any_categories = true;
+            float category_percentage = (float)stats->category_correct[i] / stats->category_totals[i] * 100.0f;
+            printf("  %s: %d/%d correct (%.1f%%)\n", 
+                   category_names[i], 
+                   stats->category_correct[i], 
+                   stats->category_totals[i], 
+                   category_percentage);
+        }
+    }
+    
+    if (!any_categories) {
+        printf("  No category data available.\n");
+    }
+    
     printf("\nThank you for practicing metric conversions!\n");
 }
 
