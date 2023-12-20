@@ -7,6 +7,7 @@
 
 // Function prototypes
 void run_practice_session(const category_selection_t *selection);
+int get_session_length(void);
 
 void show_menu(void) {
     printf("\n");
@@ -37,7 +38,8 @@ char* get_user_input(void) {
             // Clear the rest of the input line
             int c;
             while ((c = getchar()) != '\n' && c != EOF);
-            printf("Input too long. Maximum length is %d characters.\n", MAX_INPUT_LENGTH - 1);
+            printf("⚠️  Input too long (max %d characters).\n", MAX_INPUT_LENGTH - 1);
+            printf("💡 Try shorter commands like 'a', 'help', or 'all'\n");
             return NULL;
         }
         
@@ -65,18 +67,59 @@ void trim_whitespace(char *str) {
     }
 }
 
+int get_session_length(void) {
+    char *input;
+    
+    printf("\nSession Length Options:\n");
+    printf("─────────────────────────\n");
+    printf("  1) 5 questions (quick practice)\n");
+    printf("  2) 10 questions (standard session)\n");
+    printf("  3) 20 questions (extended practice)\n");
+    printf("  4) Unlimited (practice until you quit)\n\n");
+    printf("Select option (1-4, or press Enter for unlimited): ");
+    fflush(stdout);
+    
+    input = get_user_input();
+    if (input == NULL || strlen(input) == 0) {
+        return 0; // Unlimited
+    }
+    
+    trim_whitespace(input);
+    
+    if (strcmp(input, "1") == 0) {
+        return 5;
+    } else if (strcmp(input, "2") == 0) {
+        return 10;
+    } else if (strcmp(input, "3") == 0) {
+        return 20;
+    } else if (strcmp(input, "4") == 0) {
+        return 0; // Unlimited
+    } else {
+        printf("⚠️  Invalid selection '%s'. Using unlimited questions.\n", input);
+        printf("💡 Next time, use 1-4 or press Enter for unlimited.\n");
+        return 0;
+    }
+}
+
 void run_practice_session(const category_selection_t *selection) {
     session_stats_t stats = {0}; // Initialize statistics
     float user_answer;
     bool continue_session = true;
+    int max_questions = get_session_length();
+    int questions_asked = 0;
     
     printf("Practice Session Started!\n");
     printf("─────────────────────────\n");
+    if (max_questions > 0) {
+        printf("• Session limit: %d questions\n", max_questions);
+    } else {
+        printf("• Unlimited questions (practice until you quit)\n");
+    }
     printf("• Enter a number to answer questions\n");
     printf("• Type 'skip' to skip a question\n");
     printf("• Type 'quit' or 'exit' to end the session\n\n");
     
-    while (continue_session) {
+    while (continue_session && (max_questions == 0 || questions_asked < max_questions)) {
         // Generate a new question
         question_t question = generate_question(selection);
         
@@ -86,8 +129,14 @@ void run_practice_session(const category_selection_t *selection) {
             break;
         }
         
-        // Display the question
-        printf("%s", question.question_text);
+        // Display the question with improved formatting
+        questions_asked++;
+        if (max_questions > 0) {
+            printf("\n[Question %d/%d] %s\n", questions_asked, max_questions, question.question_text);
+        } else {
+            printf("\n[Question %d] %s\n", questions_asked, question.question_text);
+        }
+        printf("═══════════════════════════════════════\n");
         
         // Get user's answer
         if (get_numeric_answer(&user_answer)) {
@@ -97,7 +146,7 @@ void run_practice_session(const category_selection_t *selection) {
             // Update statistics
             update_stats(&stats, &question, correct);
             
-            printf("\n");
+            printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
         } else {
             // User chose to quit, skip, or there was an error
             // get_numeric_answer() already handled the appropriate messages
@@ -107,8 +156,13 @@ void run_practice_session(const category_selection_t *selection) {
                 continue_session = false;
             }
             // For skip or other cases, just continue with next question
-            printf("\n");
+            printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
         }
+    }
+    
+    // Check if session ended due to question limit
+    if (max_questions > 0 && questions_asked >= max_questions) {
+        printf("🎉 Session complete! You've answered %d questions.\n", max_questions);
     }
     
     // Print session summary
@@ -131,10 +185,11 @@ int main(void) {
             // get_user_input() already printed error message if needed
             // For EOF, exit gracefully
             if (feof(stdin)) {
-                printf("\nGoodbye!\n");
+                printf("\n👋 Goodbye!\n");
                 break;
             }
-            // For other errors or too-long input, continue the loop
+            // For other errors or too-long input, show menu again
+            printf("Please try again.\n\n");
             continue;
         }
         
@@ -152,21 +207,51 @@ int main(void) {
             printf("Goodbye!\n");
             break;
         } else if (strcmp(user_input, "help") == 0 || strcmp(user_input, "h") == 0 || strcmp(user_input, "?") == 0) {
-            printf("\nHelp - Valid Input Options:\n");
-            printf("─────────────────────────────\n");
-            printf("Categories (select one or more):\n");
-            printf("  a = Distance     (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
-            printf("  b = Weight       (pounds ↔ kg, ounces ↔ grams)\n");
-            printf("  c = Temperature  (Celsius ↔ Fahrenheit, Celsius ↔ Kelvin)\n");
-            printf("  d = Volume       (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n\n");
-            printf("Special options:\n");
-            printf("  all   = Select all categories\n");
-            printf("  help  = Show this help message\n");
-            printf("  quit  = Exit the program\n\n");
-            printf("Examples:\n");
-            printf("  a     = Distance only\n");
-            printf("  ac    = Distance and Temperature\n");
-            printf("  abcd  = All categories (same as 'all')\n\n");
+            printf("\n🎓 Metric Trainer - Complete Help Guide\n");
+            printf("═══════════════════════════════════════════════════════════\n");
+            
+            printf("\n📚 CATEGORY SELECTION\n");
+            printf("─────────────────────\n");
+            printf("Choose conversion categories for practice:\n");
+            printf("  📏 a = Distance     (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
+            printf("  ⚖️  b = Weight       (pounds ↔ kg, ounces ↔ grams)\n");
+            printf("  🌡️  c = Temperature  (Celsius ↔ Fahrenheit, Celsius ↔ Kelvin)\n");
+            printf("  🥤 d = Volume       (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n");
+            
+            printf("\n🎯 INPUT OPTIONS\n");
+            printf("────────────────\n");
+            printf("  • Single category:     'a', 'b', 'c', or 'd'\n");
+            printf("  • Multiple categories: 'ac', 'bd', 'abc'\n");
+            printf("  • All categories:      'all' or 'abcd'\n");
+            printf("  • Get this help:       'help', 'h', or '?'\n");
+            printf("  • Exit program:        'quit' or 'exit'\n");
+            
+            printf("\n🎮 PRACTICE SESSION\n");
+            printf("───────────────────\n");
+            printf("After selecting categories, you'll choose session length:\n");
+            printf("  • Quick (5 questions)    • Standard (10 questions)\n");
+            printf("  • Extended (20 questions) • Unlimited (until you quit)\n");
+            
+            printf("\nDuring practice:\n");
+            printf("  • Enter numbers (decimals OK): 5.2, 100, -3.14\n");
+            printf("  • Skip difficult questions:    'skip'\n");
+            printf("  • End session early:           'quit' or 'exit'\n");
+            
+            printf("\n📊 FEATURES\n");
+            printf("───────────\n");
+            printf("  ✓ Realistic conversion ranges and tolerances\n");
+            printf("  ✓ Educational feedback and hints for wrong answers\n");
+            printf("  ✓ Session statistics with category breakdowns\n");
+            printf("  ✓ Progress tracking within sessions\n");
+            
+            printf("\n💡 EXAMPLES\n");
+            printf("───────────\n");
+            printf("  'a'    → Practice distance conversions only\n");
+            printf("  'cd'   → Practice temperature and volume together\n");
+            printf("  'all'  → Practice all conversion types\n");
+            
+            printf("\n═══════════════════════════════════════════════════════════\n");
+            printf("Ready to start? Enter your category choice above! 🚀\n\n");
             continue;
         }
         
@@ -193,12 +278,16 @@ int main(void) {
             run_practice_session(&selection);
             break;  // Exit after practice session
         } else {
-            printf("Invalid input: '%s'\n", user_input);
-            printf("Valid options:\n");
-            printf("  • Single categories: 'a', 'b', 'c', 'd'\n");
-            printf("  • Combinations: 'ac', 'bd', 'abc', etc.\n");
-            printf("  • All categories: 'all'\n");
-            printf("  • Exit: 'quit' or 'exit'\n\n");
+            printf("\n❌ Invalid input: '%s'\n", user_input);
+            printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+            printf("📖 Quick Reference:\n");
+            printf("  ✓ Single categories: 'a', 'b', 'c', 'd'\n");
+            printf("  ✓ Multiple categories: 'ac', 'bd', 'abc'\n");
+            printf("  ✓ All categories: 'all'\n");
+            printf("  ✓ Get help: 'help' or '?'\n");
+            printf("  ✓ Exit program: 'quit' or 'exit'\n");
+            printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+            printf("💡 Tip: Try 'help' for detailed explanations\n\n");
         }
     }
     

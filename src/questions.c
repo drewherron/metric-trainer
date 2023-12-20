@@ -113,10 +113,30 @@ question_t generate_question(const category_selection_t *selection) {
     strcpy(q.from_unit, conv->from_unit);
     strcpy(q.to_unit, conv->to_unit);
     
-    // Format the question text
+    // Choose category-specific emoji
+    const char* category_emoji;
+    switch (chosen_category) {
+        case CATEGORY_DISTANCE:
+            category_emoji = "📏"; 
+            break;
+        case CATEGORY_WEIGHT:
+            category_emoji = "⚖️";
+            break;
+        case CATEGORY_TEMPERATURE:
+            category_emoji = "🌡️";
+            break;
+        case CATEGORY_VOLUME:
+            category_emoji = "🥤";
+            break;
+        default:
+            category_emoji = "📏";
+            break;
+    }
+    
+    // Format the question text with improved formatting
     snprintf(q.question_text, MAX_QUESTION_TEXT,
-             "Convert %.1f %s to %s: ",
-             value, conv->from_unit, conv->to_unit);
+             "%s Convert %.1f %s to %s",
+             category_emoji, value, conv->from_unit, conv->to_unit);
     
     return q;
 }
@@ -126,8 +146,10 @@ bool check_answer(const question_t *question, float user_answer) {
     bool is_correct = difference <= question->tolerance;
     float percent_error = (difference / question->correct_answer) * 100.0f;
     
-    printf("Your answer: %.2f, Correct answer: %.2f (tolerance: ±%.2f)\n", 
-           user_answer, question->correct_answer, question->tolerance);
+    printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+    printf("Your answer: %.2f\n", user_answer);
+    printf("Correct answer: %.2f (tolerance: ±%.2f)\n", 
+           question->correct_answer, question->tolerance);
     
     if (is_correct) {
         printf("✓ Correct!");
@@ -174,8 +196,8 @@ void update_stats(session_stats_t *stats, const question_t *question, bool corre
 }
 
 void print_session_summary(const session_stats_t *stats) {
-    printf("Session Summary\n");
-    printf("===============\n");
+    printf("\n🎯 Session Summary\n");
+    printf("══════════════════════════════════════════\n");
     
     // Overall statistics
     if (stats->total_questions > 0) {
@@ -525,7 +547,8 @@ bool get_numeric_answer(float *answer) {
             // Clear remaining input
             int c;
             while ((c = getchar()) != '\n' && c != EOF);
-            printf("Input too long. Please enter a number.\n");
+            printf("⚠️  Input too long (max 31 characters).\n");
+            printf("💡 Try a shorter number or use scientific notation (e.g., 1.2e6)\n");
             return false;
         }
         
@@ -543,24 +566,30 @@ bool get_numeric_answer(float *answer) {
         
         // Check for empty input
         if (*start == '\0') {
-            printf("Please enter a number.\n");
+            printf("⚠️  Empty input. Please enter a number or command.\n");
+            printf("💡 Valid: numbers (5.2), 'skip', 'quit'\n");
             return false;
         }
         
         // Check for special commands
         if (strcmp(start, "quit") == 0 || strcmp(start, "exit") == 0) {
-            printf("Exiting practice session...\n");
+            printf("👋 Exiting practice session...\n");
             return false;
         }
         
         if (strcmp(start, "skip") == 0) {
-            printf("Skipping question...\n");
+            printf("⏭️  Skipping question...\n");
             return false;
         }
         
         // Validate and parse number
         if (!is_valid_number(start)) {
-            printf("Invalid input. Please enter a valid number (e.g., 5.2, -3.14, 0.5).\n");
+            printf("❌ Invalid input: '%s'\n", start);
+            printf("📖 Please enter a valid number:\n");
+            printf("  ✓ Whole numbers: 5, 42, 100\n");
+            printf("  ✓ Decimals: 5.2, 3.14, 0.75\n");
+            printf("  ✓ Negative: -10, -2.5\n");
+            printf("  ✓ Commands: 'skip', 'quit'\n");
             return false;
         }
         
@@ -570,9 +599,10 @@ bool get_numeric_answer(float *answer) {
     
     // EOF or read error
     if (feof(stdin)) {
-        printf("\nExiting...\n");
+        printf("\n👋 Exiting...\n");
     } else {
-        printf("Error reading input.\n");
+        printf("❌ Error reading input.\n");
+        printf("💡 If using copy/paste, try typing the number manually.\n");
     }
     return false;
 }
