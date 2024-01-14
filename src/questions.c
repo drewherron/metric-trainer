@@ -1,3 +1,17 @@
+/*
+ * questions.c - Question Generation and Conversion System Implementation
+ * 
+ * Core implementation of the metric conversion practice system including:
+ * - Mathematical conversion functions for all supported unit types
+ * - Question generation with realistic ranges and tolerances
+ * - Answer validation with educational feedback
+ * - Session statistics tracking and reporting
+ * - User input handling and validation
+ * 
+ * The system is data-driven using conversion_info_t structures that define
+ * conversion parameters, ranges, and tolerance levels for each unit pair.
+ */
+
 #include "questions.h"
 #include <stdio.h>
 #include <string.h>
@@ -5,6 +19,8 @@
 #include <time.h>
 #include <math.h>
 #include <ctype.h>
+
+/* ========== Category Management Functions ========== */
 
 void init_categories(category_selection_t *selection) {
     for (int i = 0; i < CATEGORY_COUNT; i++) {
@@ -179,6 +195,8 @@ bool check_answer(const question_t *question, float user_answer) {
     return is_correct;
 }
 
+/* ========== Statistics and Reporting Functions ========== */
+
 void update_stats(session_stats_t *stats, const question_t *question, bool correct) {
     // Update total question count
     stats->total_questions++;
@@ -263,6 +281,9 @@ float round_to_precision(float value, int decimal_places) {
     float multiplier = powf(10.0f, (float)decimal_places);
     return roundf(value * multiplier) / multiplier;
 }
+
+/* ========== Unit Conversion Functions ========== */
+/* Mathematical conversion functions organized by category */
 
 // Distance conversion functions
 float miles_to_km(float miles) {
@@ -499,6 +520,8 @@ const conversion_info_t* get_conversions_for_category(category_t category, int *
     }
 }
 
+/* ========== Input Validation and Handling Functions ========== */
+
 bool is_valid_number(const char *input) {
     if (input == NULL || *input == '\0') {
         return false;
@@ -529,7 +552,7 @@ bool is_valid_number(const char *input) {
     return true;
 }
 
-bool get_numeric_answer(float *answer) {
+int get_numeric_answer(float *answer) {
     static char input[64];
     
     printf("Your answer: ");
@@ -549,7 +572,7 @@ bool get_numeric_answer(float *answer) {
             while ((c = getchar()) != '\n' && c != EOF);
             printf("⚠️  Input too long (max 31 characters).\n");
             printf("💡 Try a shorter number or use scientific notation (e.g., 1.2e6)\n");
-            return false;
+            return 0;
         }
         
         // Trim whitespace
@@ -568,18 +591,18 @@ bool get_numeric_answer(float *answer) {
         if (*start == '\0') {
             printf("⚠️  Empty input. Please enter a number or command.\n");
             printf("💡 Valid: numbers (5.2), 'skip', 'quit'\n");
-            return false;
+            return 0;
         }
         
         // Check for special commands
         if (strcmp(start, "quit") == 0 || strcmp(start, "exit") == 0) {
-            printf("👋 Exiting practice session...\n");
-            return false;
+            printf("👋 Returning to main menu...\n");
+            return -1;
         }
         
         if (strcmp(start, "skip") == 0) {
             printf("⏭️  Skipping question...\n");
-            return false;
+            return 0;
         }
         
         // Validate and parse number
@@ -590,11 +613,11 @@ bool get_numeric_answer(float *answer) {
             printf("  ✓ Decimals: 5.2, 3.14, 0.75\n");
             printf("  ✓ Negative: -10, -2.5\n");
             printf("  ✓ Commands: 'skip', 'quit'\n");
-            return false;
+            return 0;
         }
         
         *answer = strtof(start, NULL);
-        return true;
+        return 1;
     }
     
     // EOF or read error
@@ -604,5 +627,5 @@ bool get_numeric_answer(float *answer) {
         printf("❌ Error reading input.\n");
         printf("💡 If using copy/paste, try typing the number manually.\n");
     }
-    return false;
+    return 0;
 }

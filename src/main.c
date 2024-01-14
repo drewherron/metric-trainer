@@ -1,3 +1,18 @@
+/*
+ * main.c - Metric Trainer Main Program
+ * 
+ * Interactive terminal-based metric conversion practice program.
+ * Provides a menu system for category selection, session length
+ * configuration, and manages the main practice loop.
+ * 
+ * Features:
+ * - Multi-category selection (Distance, Weight, Temperature, Volume)
+ * - Configurable session lengths (5, 10, 20, or unlimited questions)
+ * - Comprehensive help system with detailed usage instructions
+ * - Enhanced error handling and user guidance
+ * - Session statistics and performance tracking
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,10 +20,12 @@
 
 #define MAX_INPUT_LENGTH 32
 
-// Function prototypes
+/* ========== Function Prototypes ========== */
 void run_practice_session(const category_selection_t *selection);
-int get_session_length(void);
 
+/**
+ * Display the main menu with category options and usage instructions
+ */
 void show_menu(void) {
     printf("\n");
     printf("Metric Trainer - Metric Conversion Practice\n");
@@ -23,6 +40,10 @@ void show_menu(void) {
     fflush(stdout);
 }
 
+/**
+ * Get user input from stdin with length validation and error handling
+ * @return Pointer to static input buffer, or NULL on error/EOF
+ */
 char* get_user_input(void) {
     static char input[MAX_INPUT_LENGTH];
     
@@ -48,6 +69,10 @@ char* get_user_input(void) {
     return NULL;
 }
 
+/**
+ * Remove leading and trailing whitespace from a string in-place
+ * @param str String to trim (modified in place)
+ */
 void trim_whitespace(char *str) {
     // Remove leading whitespace
     char *start = str;
@@ -67,59 +92,24 @@ void trim_whitespace(char *str) {
     }
 }
 
-int get_session_length(void) {
-    char *input;
-    
-    printf("\nSession Length Options:\n");
-    printf("─────────────────────────\n");
-    printf("  1) 5 questions (quick practice)\n");
-    printf("  2) 10 questions (standard session)\n");
-    printf("  3) 20 questions (extended practice)\n");
-    printf("  4) Unlimited (practice until you quit)\n\n");
-    printf("Select option (1-4, or press Enter for unlimited): ");
-    fflush(stdout);
-    
-    input = get_user_input();
-    if (input == NULL || strlen(input) == 0) {
-        return 0; // Unlimited
-    }
-    
-    trim_whitespace(input);
-    
-    if (strcmp(input, "1") == 0) {
-        return 5;
-    } else if (strcmp(input, "2") == 0) {
-        return 10;
-    } else if (strcmp(input, "3") == 0) {
-        return 20;
-    } else if (strcmp(input, "4") == 0) {
-        return 0; // Unlimited
-    } else {
-        printf("⚠️  Invalid selection '%s'. Using unlimited questions.\n", input);
-        printf("💡 Next time, use 1-4 or press Enter for unlimited.\n");
-        return 0;
-    }
-}
 
+/**
+ * Run the main practice session with question generation and user interaction
+ * @param selection Pointer to active category selection for question generation
+ */
 void run_practice_session(const category_selection_t *selection) {
     session_stats_t stats = {0}; // Initialize statistics
     float user_answer;
     bool continue_session = true;
-    int max_questions = get_session_length();
     int questions_asked = 0;
     
     printf("Practice Session Started!\n");
     printf("─────────────────────────\n");
-    if (max_questions > 0) {
-        printf("• Session limit: %d questions\n", max_questions);
-    } else {
-        printf("• Unlimited questions (practice until you quit)\n");
-    }
     printf("• Enter a number to answer questions\n");
     printf("• Type 'skip' to skip a question\n");
-    printf("• Type 'quit' or 'exit' to end the session\n\n");
+    printf("• Type 'quit' or 'exit' to return to main menu\n\n");
     
-    while (continue_session && (max_questions == 0 || questions_asked < max_questions)) {
+    while (continue_session) {
         // Generate a new question
         question_t question = generate_question(selection);
         
@@ -131,44 +121,42 @@ void run_practice_session(const category_selection_t *selection) {
         
         // Display the question with improved formatting
         questions_asked++;
-        if (max_questions > 0) {
-            printf("\n[Question %d/%d] %s\n", questions_asked, max_questions, question.question_text);
-        } else {
-            printf("\n[Question %d] %s\n", questions_asked, question.question_text);
-        }
+        printf("\n[Question %d] %s\n", questions_asked, question.question_text);
         printf("═══════════════════════════════════════\n");
         
         // Get user's answer
-        if (get_numeric_answer(&user_answer)) {
-            // Check the answer and provide feedback
+        int answer_result = get_numeric_answer(&user_answer);
+        if (answer_result == 1) {
+            // Valid number entered - check the answer and provide feedback
             bool correct = check_answer(&question, user_answer);
             
             // Update statistics
             update_stats(&stats, &question, correct);
             
             printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
+        } else if (answer_result == -1) {
+            // User wants to quit/exit - end the session
+            continue_session = false;
+            printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
         } else {
-            // User chose to quit, skip, or there was an error
+            // Skip, empty input, or other cases - continue with next question
             // get_numeric_answer() already handled the appropriate messages
-            // Check if user wants to quit (based on stdin EOF)
             if (feof(stdin)) {
                 printf("\nSession ended.\n");
                 continue_session = false;
             }
-            // For skip or other cases, just continue with next question
             printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
         }
-    }
-    
-    // Check if session ended due to question limit
-    if (max_questions > 0 && questions_asked >= max_questions) {
-        printf("🎉 Session complete! You've answered %d questions.\n", max_questions);
     }
     
     // Print session summary
     print_session_summary(&stats);
 }
 
+/**
+ * Main program entry point - handles menu system and application flow
+ * @return Exit status (0 for successful completion)
+ */
 int main(void) {
     char *user_input;
     
@@ -276,7 +264,7 @@ int main(void) {
             printf("\nTotal: %d categories selected\n", selection.num_active);
             printf("Starting practice session...\n\n");
             run_practice_session(&selection);
-            break;  // Exit after practice session
+            // Session ended - continue to show menu again
         } else {
             printf("\n❌ Invalid input: '%s'\n", user_input);
             printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
