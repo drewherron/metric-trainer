@@ -20,6 +20,9 @@
 
 #define MAX_INPUT_LENGTH 32
 
+/* ========== Global Variables ========== */
+bool g_whole_numbers_mode = false;  // Global flag for whole numbers only
+
 /* ========== Function Prototypes ========== */
 void run_practice_session(const category_selection_t *selection);
 
@@ -154,16 +157,72 @@ void run_practice_session(const category_selection_t *selection) {
 }
 
 /**
- * Main program entry point - handles menu system and application flow
+ * Display command line help information
+ */
+void show_command_help(void) {
+    printf("Metric Trainer - Interactive Metric Conversion Practice\n");
+    printf("======================================================\n\n");
+    printf("USAGE:\n");
+    printf("  metric-trainer [OPTIONS]\n\n");
+    printf("OPTIONS:\n");
+    printf("  -h, --help     Show this help message and exit\n");
+    printf("  -v, --version  Show version information and exit\n");
+    printf("  -w, --whole    Use whole numbers only (easier practice)\n\n");
+    printf("DESCRIPTION:\n");
+    printf("  Interactive terminal-based program for practicing metric conversions.\n");
+    printf("  Supports distance, weight, temperature, and volume conversions with\n");
+    printf("  educational feedback and session statistics.\n\n");
+    printf("EXAMPLES:\n");
+    printf("  metric-trainer          # Start interactive mode\n");
+    printf("  metric-trainer --help   # Show this help\n");
+    printf("  metric-trainer --whole  # Practice with whole numbers only\n\n");
+    printf("For detailed usage instructions, run the program and type 'help'.\n");
+}
+
+/**
+ * Display version information
+ */
+void show_version(void) {
+    printf("Metric Trainer v1.0\n");
+    printf("Drew Herron, 2024\n");
+    printf("www.drewherron.com\n");
+}
+
+/**
+ * Main program entry point - handles command line arguments and application flow
+ * @param argc Number of command line arguments
+ * @param argv Array of command line argument strings
  * @return Exit status (0 for successful completion)
  */
-int main(void) {
+int main(int argc, char *argv[]) {
+    // Handle command line arguments
+    if (argc > 1) {
+        for (int i = 1; i < argc; i++) {
+            if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+                show_command_help();
+                return 0;
+            } else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--version") == 0) {
+                show_version();
+                return 0;
+            } else if (strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--whole") == 0) {
+                g_whole_numbers_mode = true;
+            } else {
+                printf("Unknown option: %s\n", argv[i]);
+                printf("Try 'metric-trainer --help' for more information.\n");
+                return 1;
+            }
+        }
+    }
+    
     char *user_input;
     
     // Initialize random number generator
     init_random_seed();
     
     printf("Welcome to Metric Trainer!\n");
+    if (g_whole_numbers_mode) {
+        printf("🔢 Whole Numbers Mode: Questions will use only whole numbers\n");
+    }
     
     while (1) {
         show_menu();

@@ -28,6 +28,9 @@
 
 #include <stdbool.h>
 
+/* ========== Global Variables ========== */
+extern bool g_whole_numbers_mode;  // Flag for whole numbers only mode
+
 #define MAX_UNIT_NAME 32
 #define MAX_QUESTION_TEXT 128
 #define MAX_CONVERSIONS_PER_CATEGORY 8

@@ -274,7 +274,17 @@ float generate_random_value(float min, float max) {
     // Generate a random float between min and max
     float range = max - min;
     float random_fraction = (float)rand() / (float)RAND_MAX;
-    return min + (random_fraction * range);
+    float result = min + (random_fraction * range);
+    
+    // If whole numbers mode is enabled, round to nearest integer
+    if (g_whole_numbers_mode) {
+        result = roundf(result);
+        // Ensure we stay within bounds after rounding
+        if (result < min) result = roundf(min);
+        if (result > max) result = roundf(max);
+    }
+    
+    return result;
 }
 
 float round_to_precision(float value, int decimal_places) {
