@@ -30,6 +30,7 @@
 
 /* ========== Global Variables ========== */
 extern bool g_whole_numbers_mode;  // Flag for whole numbers only mode
+extern bool g_easy_mode;           // Flag for easy mode (increments of 5)
 
 #define MAX_UNIT_NAME 32
 #define MAX_QUESTION_TEXT 128

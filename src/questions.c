@@ -284,6 +284,40 @@ float generate_random_value(float min, float max) {
         if (result > max) result = roundf(max);
     }
     
+    // If easy mode is enabled, constrain to 1 or multiples of 5
+    if (g_easy_mode) {
+        int int_result = (int)result;
+        
+        // Special case: if result is close to 1 and 1 is within bounds, use 1
+        if (int_result <= 2 && min <= 1.0f) {
+            result = 1.0f;
+        } else {
+            // Round to nearest multiple of 5
+            int multiple_of_5 = ((int_result + 2) / 5) * 5;  // Round to nearest 5
+            if (multiple_of_5 < 5) multiple_of_5 = 5;  // Minimum is 5
+            result = (float)multiple_of_5;
+        }
+        
+        // Ensure we stay within bounds
+        if (result < min) {
+            // Find the smallest valid value (1 or next multiple of 5)
+            if (min <= 1.0f) {
+                result = 1.0f;
+            } else {
+                result = ((int)(min + 4) / 5) * 5;  // Round up to next multiple of 5
+            }
+        }
+        if (result > max) {
+            // Find the largest valid value within max
+            if (max >= 1.0f && ((int)max / 5) * 5 < 1.0f) {
+                result = 1.0f;  // Only 1 fits
+            } else {
+                result = ((int)max / 5) * 5;  // Round down to multiple of 5
+                if (result < 1.0f && max >= 1.0f) result = 1.0f;
+            }
+        }
+    }
+    
     return result;
 }
 

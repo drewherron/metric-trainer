@@ -22,6 +22,7 @@
 
 /* ========== Global Variables ========== */
 bool g_whole_numbers_mode = false;  // Global flag for whole numbers only
+bool g_easy_mode = false;           // Global flag for easy mode (increments of 5)
 
 /* ========== Function Prototypes ========== */
 void run_practice_session(const category_selection_t *selection);
@@ -167,7 +168,8 @@ void show_command_help(void) {
     printf("OPTIONS:\n");
     printf("  -h, --help     Show this help message and exit\n");
     printf("  -v, --version  Show version information and exit\n");
-    printf("  -w, --whole    Use whole numbers only (easier practice)\n\n");
+    printf("  -w, --whole    Use whole numbers only (easier practice)\n");
+    printf("  -e, --easy     Use simple numbers only: 1, 5, 10, 15, 20... (easiest)\n\n");
     printf("DESCRIPTION:\n");
     printf("  Interactive terminal-based program for practicing metric conversions.\n");
     printf("  Supports distance, weight, temperature, and volume conversions with\n");
@@ -175,7 +177,8 @@ void show_command_help(void) {
     printf("EXAMPLES:\n");
     printf("  metric-trainer          # Start interactive mode\n");
     printf("  metric-trainer --help   # Show this help\n");
-    printf("  metric-trainer --whole  # Practice with whole numbers only\n\n");
+    printf("  metric-trainer --whole  # Practice with whole numbers only\n");
+    printf("  metric-trainer --easy   # Practice with simple numbers only\n\n");
     printf("For detailed usage instructions, run the program and type 'help'.\n");
 }
 
@@ -206,6 +209,9 @@ int main(int argc, char *argv[]) {
                 return 0;
             } else if (strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--whole") == 0) {
                 g_whole_numbers_mode = true;
+            } else if (strcmp(argv[i], "-e") == 0 || strcmp(argv[i], "--easy") == 0) {
+                g_easy_mode = true;
+                g_whole_numbers_mode = true;  // Easy mode implies whole numbers
             } else {
                 printf("Unknown option: %s\n", argv[i]);
                 printf("Try 'metric-trainer --help' for more information.\n");
@@ -220,7 +226,9 @@ int main(int argc, char *argv[]) {
     init_random_seed();
     
     printf("Welcome to Metric Trainer!\n");
-    if (g_whole_numbers_mode) {
+    if (g_easy_mode) {
+        printf("🟢 Easy Mode: Questions will use simple numbers (1, 5, 10, 15, 20...)\n");
+    } else if (g_whole_numbers_mode) {
         printf("🔢 Whole Numbers Mode: Questions will use only whole numbers\n");
     }
     
