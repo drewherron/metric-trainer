@@ -37,7 +37,7 @@ void show_menu(void) {
     printf("Select categories:\n");
     printf("  a) Distance     (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
     printf("  b) Weight       (pounds ↔ kg, ounces ↔ grams)\n");
-    printf("  c) Temperature  (Celsius ↔ Fahrenheit, Celsius ↔ Kelvin)\n");
+    printf("  c) Temperature  (Celsius ↔ Fahrenheit)\n");
     printf("  d) Volume       (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n");
     printf("  all) All categories\n\n");
     printf("Enter choice (e.g., \"b\", \"all\", \"ac\", or \"help\"): ");
@@ -270,7 +270,7 @@ int main(int argc, char *argv[]) {
             printf("Choose conversion categories for practice:\n");
             printf("  📏 a = Distance     (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
             printf("  ⚖️  b = Weight       (pounds ↔ kg, ounces ↔ grams)\n");
-            printf("  🌡️  c = Temperature  (Celsius ↔ Fahrenheit, Celsius ↔ Kelvin)\n");
+            printf("  🌡️  c = Temperature  (Celsius ↔ Fahrenheit)\n");
             printf("  🥤 d = Volume       (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n");
             
             printf("\n🎯 INPUT OPTIONS\n");
@@ -322,7 +322,7 @@ int main(int argc, char *argv[]) {
                 printf("  ✓ Weight (pounds ↔ kg, ounces ↔ grams)\n");
             }
             if (selection.active[CATEGORY_TEMPERATURE]) {
-                printf("  ✓ Temperature (Celsius ↔ Fahrenheit, Celsius ↔ Kelvin)\n");
+                printf("  ✓ Temperature (Celsius ↔ Fahrenheit)\n");
             }
             if (selection.active[CATEGORY_VOLUME]) {
                 printf("  ✓ Volume (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n");
