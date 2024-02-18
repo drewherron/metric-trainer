@@ -129,30 +129,10 @@ question_t generate_question(const category_selection_t *selection) {
     strcpy(q.from_unit, conv->from_unit);
     strcpy(q.to_unit, conv->to_unit);
     
-    // Choose category-specific emoji
-    const char* category_emoji;
-    switch (chosen_category) {
-        case CATEGORY_DISTANCE:
-            category_emoji = "📏"; 
-            break;
-        case CATEGORY_WEIGHT:
-            category_emoji = "⚖️";
-            break;
-        case CATEGORY_TEMPERATURE:
-            category_emoji = "🌡️";
-            break;
-        case CATEGORY_VOLUME:
-            category_emoji = "🥤";
-            break;
-        default:
-            category_emoji = "📏";
-            break;
-    }
-    
     // Format the question text with improved formatting
     snprintf(q.question_text, MAX_QUESTION_TEXT,
-             "%s Convert %.1f %s to %s",
-             category_emoji, value, conv->from_unit, conv->to_unit);
+             "Convert %.1f %s to %s",
+             value, conv->from_unit, conv->to_unit);
     
     return q;
 }
@@ -162,34 +142,16 @@ bool check_answer(const question_t *question, float user_answer) {
     bool is_correct = difference <= question->tolerance;
     float percent_error = (difference / question->correct_answer) * 100.0f;
     
-    printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-    printf("Your answer: %.2f\n", user_answer);
-    printf("Correct answer: %.2f (tolerance: ±%.2f)\n", 
-           question->correct_answer, question->tolerance);
+    printf("Correct answer: %.2f\n", question->correct_answer);
     
     if (is_correct) {
-        printf("✓ Correct!");
+        printf("Correct!");
         if (difference > 0.01f) {
             printf(" (%.1f%% error)", percent_error);
         }
         printf("\n");
     } else {
-        printf("✗ Incorrect. The correct answer is %.2f %s\n", 
-               question->correct_answer, question->to_unit);
-        
-        // Provide educational feedback based on how far off they were
-        if (percent_error < 10.0f) {
-            printf("💡 Very close! Check your decimal places or rounding.\n");
-        } else if (percent_error < 50.0f) {
-            printf("💡 You're in the right ballpark. Double-check your conversion factor.\n");
-        } else if (percent_error > 90.0f && percent_error < 110.0f) {
-            printf("💡 Hint: Did you convert in the wrong direction? (e.g., multiply instead of divide?)\n");
-        } else {
-            printf("💡 That's quite different. Make sure you're using the right conversion factor.\n");
-        }
-        
-        // Show percentage error for learning
-        printf("   Error: %.1f%% off target\n", percent_error);
+        printf("Error: %.1f%% off target\n", percent_error);
     }
     
     return is_correct;
@@ -214,7 +176,7 @@ void update_stats(session_stats_t *stats, const question_t *question, bool corre
 }
 
 void print_session_summary(const session_stats_t *stats) {
-    printf("\n🎯 Session Summary\n");
+    printf("\nSession Summary\n");
     printf("══════════════════════════════════════════\n");
     
     // Overall statistics
@@ -481,12 +443,12 @@ static const conversion_info_t weight_conversions[] = {
 
 static const conversion_info_t temperature_conversions[] = {
     {
-        "degrees Fahrenheit", "°F", "degrees Celsius", "°C", 
+        "degrees Fahrenheit", "F", "degrees Celsius", "C", 
         fahrenheit_to_celsius, 0.0f, 100.0f, 1.5f
     },
     {
-        "degrees Celsius", "°C", "degrees Fahrenheit", "°F", 
-        celsius_to_fahrenheit, -20.0f, 40.0f, 1.5f
+        "degrees Celsius", "C", "degrees Fahrenheit", "F", 
+        celsius_to_fahrenheit, 0.0f, 40.0f, 1.5f
     },
 };
 
@@ -599,8 +561,8 @@ int get_numeric_answer(float *answer) {
             // Clear remaining input
             int c;
             while ((c = getchar()) != '\n' && c != EOF);
-            printf("⚠️  Input too long (max 31 characters).\n");
-            printf("💡 Try a shorter number or use scientific notation (e.g., 1.2e6)\n");
+            printf("Input too long (max 31 characters).\n");
+            printf("Try a shorter number or use scientific notation (e.g., 1.2e6)\n");
             return 0;
         }
         
@@ -618,29 +580,28 @@ int get_numeric_answer(float *answer) {
         
         // Check for empty input
         if (*start == '\0') {
-            printf("⚠️  Empty input. Please enter a number or command.\n");
-            printf("💡 Valid: numbers (5.2), 'skip', 'quit'\n");
+            printf("Empty input. Please enter a number or command.\n");
+            printf("Valid: numbers (5.2), 'skip', 'quit'\n");
             return 0;
         }
         
         // Check for special commands
         if (strcmp(start, "quit") == 0 || strcmp(start, "exit") == 0) {
-            printf("👋 Returning to main menu...\n");
+            printf("Returning to main menu...\n");
             return -1;
         }
         
         if (strcmp(start, "skip") == 0) {
-            printf("⏭️  Skipping question...\n");
+            printf("Skipping question...\n");
             return 0;
         }
         
         // Validate and parse number
         if (!is_valid_number(start)) {
-            printf("❌ Invalid input: '%s'\n", start);
-            printf("📖 Please enter a valid number:\n");
+            printf("Invalid input: '%s'\n", start);
+            printf("Please enter a valid number:\n");
             printf("  ✓ Whole numbers: 5, 42, 100\n");
             printf("  ✓ Decimals: 5.2, 3.14, 0.75\n");
-            printf("  ✓ Negative: -10, -2.5\n");
             printf("  ✓ Commands: 'skip', 'quit'\n");
             return 0;
         }
@@ -651,10 +612,10 @@ int get_numeric_answer(float *answer) {
     
     // EOF or read error
     if (feof(stdin)) {
-        printf("\n👋 Exiting...\n");
+        printf("\nExiting...\n");
     } else {
-        printf("❌ Error reading input.\n");
-        printf("💡 If using copy/paste, try typing the number manually.\n");
+        printf("Error reading input.\n");
+        printf("If using copy/paste, try typing the number manually.\n");
     }
     return 0;
 }

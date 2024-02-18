@@ -56,10 +56,10 @@ typedef struct {
 } category_selection_t;
 
 typedef struct {
-    char from_unit[MAX_UNIT_NAME];      // e.g., "miles", "°F"
-    char from_abbrev[8];                // e.g., "mi", "°F" 
-    char to_unit[MAX_UNIT_NAME];        // e.g., "kilometers", "°C"
-    char to_abbrev[8];                  // e.g., "km", "°C"
+    char from_unit[MAX_UNIT_NAME];      // e.g., "miles", "F"
+    char from_abbrev[8];                // e.g., "mi", "F" 
+    char to_unit[MAX_UNIT_NAME];        // e.g., "kilometers", "C"
+    char to_abbrev[8];                  // e.g., "km", "C"
     float (*convert_func)(float);       // Function pointer for conversion
     float min_value;                    // Minimum practical value to generate
     float max_value;                    // Maximum practical value to generate

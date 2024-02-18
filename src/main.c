@@ -35,10 +35,10 @@ void show_menu(void) {
     printf("Metric Trainer - Metric Conversion Practice\n");
     printf("==========================================\n\n");
     printf("Select categories:\n");
-    printf("  a) Distance     (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
-    printf("  b) Weight       (pounds ↔ kg, ounces ↔ grams)\n");
-    printf("  c) Temperature  (Celsius ↔ Fahrenheit)\n");
-    printf("  d) Volume       (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n");
+    printf("  a) Distance     (miles <-> km, feet <-> m, inches <-> cm)\n");
+    printf("  b) Weight       (pounds <-> kg, ounces <-> grams)\n");
+    printf("  c) Temperature  (Celsius <-> Fahrenheit)\n");
+    printf("  d) Volume       (gallons <-> liters, cups <-> ml, fl oz conversions)\n");
     printf("  all) All categories\n\n");
     printf("Enter choice (e.g., \"b\", \"all\", \"ac\", or \"help\"): ");
     fflush(stdout);
@@ -63,8 +63,8 @@ char* get_user_input(void) {
             // Clear the rest of the input line
             int c;
             while ((c = getchar()) != '\n' && c != EOF);
-            printf("⚠️  Input too long (max %d characters).\n", MAX_INPUT_LENGTH - 1);
-            printf("💡 Try shorter commands like 'a', 'help', or 'all'\n");
+            printf("Input too long (max %d characters).\n", MAX_INPUT_LENGTH - 1);
+            printf("Try shorter commands like 'a', 'help', or 'all'\n");
             return NULL;
         }
         
@@ -227,9 +227,9 @@ int main(int argc, char *argv[]) {
     
     printf("Welcome to Metric Trainer!\n");
     if (g_easy_mode) {
-        printf("🟢 Easy Mode: Questions will use simple numbers (1, 5, 10, 15, 20...)\n");
+        printf("Easy Mode: Questions will use simple numbers (1, 5, 10, 15, 20...)\n");
     } else if (g_whole_numbers_mode) {
-        printf("🔢 Whole Numbers Mode: Questions will use only whole numbers\n");
+        printf("Whole Numbers Mode: Questions will use only whole numbers\n");
     }
     
     while (1) {
@@ -240,7 +240,7 @@ int main(int argc, char *argv[]) {
             // get_user_input() already printed error message if needed
             // For EOF, exit gracefully
             if (feof(stdin)) {
-                printf("\n👋 Goodbye!\n");
+                printf("\nGoodbye!\n");
                 break;
             }
             // For other errors or too-long input, show menu again
@@ -262,51 +262,49 @@ int main(int argc, char *argv[]) {
             printf("Goodbye!\n");
             break;
         } else if (strcmp(user_input, "help") == 0 || strcmp(user_input, "h") == 0 || strcmp(user_input, "?") == 0) {
-            printf("\n🎓 Metric Trainer - Complete Help Guide\n");
+            printf("\nMetric Trainer - Complete Help Guide\n");
             printf("═══════════════════════════════════════════════════════════\n");
             
-            printf("\n📚 CATEGORY SELECTION\n");
-            printf("─────────────────────\n");
+            printf("\nCATEGORY SELECTION\n");
+            printf("──────────────────\n");
             printf("Choose conversion categories for practice:\n");
-            printf("  📏 a = Distance     (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
-            printf("  ⚖️  b = Weight       (pounds ↔ kg, ounces ↔ grams)\n");
-            printf("  🌡️  c = Temperature  (Celsius ↔ Fahrenheit)\n");
-            printf("  🥤 d = Volume       (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n");
+            printf("  a = Distance     (miles <-> km, feet <-> m, inches <-> cm)\n");
+            printf("  b = Weight       (pounds <-> kg, ounces <-> grams)\n");
+            printf("  c = Temperature  (Celsius <-> Fahrenheit)\n");
+            printf("  d = Volume       (gallons <-> liters, cups <-> ml, fl oz conversions)\n");
             
-            printf("\n🎯 INPUT OPTIONS\n");
-            printf("────────────────\n");
+            printf("\nINPUT OPTIONS\n");
+            printf("─────────────\n");
             printf("  • Single category:     'a', 'b', 'c', or 'd'\n");
             printf("  • Multiple categories: 'ac', 'bd', 'abc'\n");
             printf("  • All categories:      'all' or 'abcd'\n");
             printf("  • Get this help:       'help', 'h', or '?'\n");
             printf("  • Exit program:        'quit' or 'exit'\n");
             
-            printf("\n🎮 PRACTICE SESSION\n");
-            printf("───────────────────\n");
-            printf("After selecting categories, you'll choose session length:\n");
-            printf("  • Quick (5 questions)    • Standard (10 questions)\n");
-            printf("  • Extended (20 questions) • Unlimited (until you quit)\n");
+            printf("\nPRACTICE SESSION\n");
+            printf("────────────────\n");
+            printf("Practice sessions continue until you type 'quit' or 'exit'.");
             
             printf("\nDuring practice:\n");
-            printf("  • Enter numbers (decimals OK): 5.2, 100, -3.14\n");
+            printf("  • Enter numbers (decimals OK): 5.2, 100, 42\n");
             printf("  • Skip difficult questions:    'skip'\n");
             printf("  • End session early:           'quit' or 'exit'\n");
             
-            printf("\n📊 FEATURES\n");
-            printf("───────────\n");
-            printf("  ✓ Realistic conversion ranges and tolerances\n");
-            printf("  ✓ Educational feedback and hints for wrong answers\n");
-            printf("  ✓ Session statistics with category breakdowns\n");
-            printf("  ✓ Progress tracking within sessions\n");
+            printf("\n\nFEATURES\n");
+            printf("────────\n");
+            printf("  • Realistic conversion ranges and tolerances\n");
+            printf("  • Educational feedback and hints for wrong answers\n");
+            printf("  • Session statistics with category breakdowns\n");
+            printf("  • Progress tracking within sessions\n");
             
-            printf("\n💡 EXAMPLES\n");
-            printf("───────────\n");
+            printf("\nEXAMPLES\n");
+            printf("────────\n");
             printf("  'a'    → Practice distance conversions only\n");
             printf("  'cd'   → Practice temperature and volume together\n");
             printf("  'all'  → Practice all conversion types\n");
             
             printf("\n═══════════════════════════════════════════════════════════\n");
-            printf("Ready to start? Enter your category choice above! 🚀\n\n");
+            printf("Ready to start? Enter your category choice above!\n\n");
             continue;
         }
         
@@ -316,16 +314,16 @@ int main(int argc, char *argv[]) {
             printf("Selected categories:\n");
             
             if (selection.active[CATEGORY_DISTANCE]) {
-                printf("  ✓ Distance (miles ↔ km, feet ↔ m, inches ↔ cm)\n");
+                printf("  Distance (miles <-> km, feet <-> m, inches <-> cm)\n");
             }
             if (selection.active[CATEGORY_WEIGHT]) {
-                printf("  ✓ Weight (pounds ↔ kg, ounces ↔ grams)\n");
+                printf("  Weight (pounds <-> kg, ounces <-> grams)\n");
             }
             if (selection.active[CATEGORY_TEMPERATURE]) {
-                printf("  ✓ Temperature (Celsius ↔ Fahrenheit)\n");
+                printf("  Temperature (Celsius <-> Fahrenheit)\n");
             }
             if (selection.active[CATEGORY_VOLUME]) {
-                printf("  ✓ Volume (gallons ↔ liters, cups ↔ ml, fl oz conversions)\n");
+                printf("  Volume (gallons <-> liters, cups <-> ml, fl oz conversions)\n");
             }
             
             printf("\nTotal: %d categories selected\n", selection.num_active);
@@ -333,16 +331,16 @@ int main(int argc, char *argv[]) {
             run_practice_session(&selection);
             // Session ended - continue to show menu again
         } else {
-            printf("\n❌ Invalid input: '%s'\n", user_input);
+            printf("\nInvalid input: '%s'\n", user_input);
             printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-            printf("📖 Quick Reference:\n");
-            printf("  ✓ Single categories: 'a', 'b', 'c', 'd'\n");
-            printf("  ✓ Multiple categories: 'ac', 'bd', 'abc'\n");
-            printf("  ✓ All categories: 'all'\n");
-            printf("  ✓ Get help: 'help' or '?'\n");
-            printf("  ✓ Exit program: 'quit' or 'exit'\n");
+            printf("Quick Reference:\n");
+            printf("  Single categories: 'a', 'b', 'c', 'd'\n");
+            printf("  Multiple categories: 'ac', 'bd', 'abc'\n");
+            printf("  All categories: 'all'\n");
+            printf("  Get help: 'help' or '?'\n");
+            printf("  Exit program: 'quit' or 'exit'\n");
             printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
-            printf("💡 Tip: Try 'help' for detailed explanations\n\n");
+            printf("Tip: Try 'help' for detailed explanations\n\n");
         }
     }
     
