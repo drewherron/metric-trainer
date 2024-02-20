@@ -84,6 +84,17 @@ typedef struct {
     int category_correct[CATEGORY_COUNT];
 } session_stats_t;
 
+typedef struct {
+    int total_questions[CATEGORY_COUNT];
+    int correct_answers[CATEGORY_COUNT];
+    float total_error[CATEGORY_COUNT];  // Sum of all percent errors for average calculation
+} persistent_stats_t;
+
+typedef struct {
+    bool is_correct;
+    float percent_error;
+} answer_result_t;
+
 /* ========== Conversion Functions ========== */
 /* Mathematical conversion functions for unit transformations */
 
@@ -138,9 +149,9 @@ question_t generate_question(const category_selection_t *selection);
  * Check if user's answer is within acceptable tolerance
  * @param question Pointer to the question being answered
  * @param user_answer The user's numeric answer
- * @return true if answer is correct (within tolerance)
+ * @return answer_result_t containing correctness and error percentage
  */
-bool check_answer(const question_t *question, float user_answer);
+answer_result_t check_answer(const question_t *question, float user_answer);
 
 /**
  * Update session statistics with question result
@@ -211,5 +222,31 @@ float round_to_precision(float value, int decimal_places);
  * Initialize random number generator with current time seed
  */
 void init_random_seed(void);
+
+/**
+ * Load persistent statistics from file
+ * @param stats Pointer to persistent_stats_t to populate
+ */
+void load_persistent_stats(persistent_stats_t *stats);
+
+/**
+ * Save persistent statistics to file
+ * @param stats Pointer to persistent_stats_t to save
+ */
+void save_persistent_stats(const persistent_stats_t *stats);
+
+/**
+ * Update persistent statistics with session data
+ * @param persistent Pointer to persistent statistics
+ * @param session Pointer to session statistics
+ * @param question Pointer to current question for category info
+ * @param percent_error The error percentage for this answer
+ */
+void update_persistent_stats(persistent_stats_t *persistent, const question_t *question, float percent_error, bool correct);
+
+/**
+ * Display persistent statistics by category
+ */
+void show_persistent_stats(void);
 
 #endif

@@ -1,16 +1,10 @@
 /*
  * main.c - Metric Trainer Main Program
- * 
+ *
  * Interactive terminal-based metric conversion practice program.
  * Provides a menu system for category selection, session length
  * configuration, and manages the main practice loop.
- * 
- * Features:
- * - Multi-category selection (Distance, Weight, Temperature, Volume)
- * - Configurable session lengths (5, 10, 20, or unlimited questions)
- * - Comprehensive help system with detailed usage instructions
- * - Enhanced error handling and user guidance
- * - Session statistics and performance tracking
+ *
  */
 
 #include <stdio.h>
@@ -50,14 +44,14 @@ void show_menu(void) {
  */
 char* get_user_input(void) {
     static char input[MAX_INPUT_LENGTH];
-    
+
     if (fgets(input, sizeof(input), stdin) != NULL) {
         // Remove newline if present
         size_t len = strlen(input);
         if (len > 0 && input[len - 1] == '\n') {
             input[len - 1] = '\0';
         }
-        
+
         // Handle input that was too long (no newline found and buffer full)
         if (len == MAX_INPUT_LENGTH - 1 && input[len - 1] != '\0') {
             // Clear the rest of the input line
@@ -67,7 +61,7 @@ char* get_user_input(void) {
             printf("Try shorter commands like 'a', 'help', or 'all'\n");
             return NULL;
         }
-        
+
         return input;
     }
     return NULL;
@@ -83,12 +77,12 @@ void trim_whitespace(char *str) {
     while (*start == ' ' || *start == '\t') {
         start++;
     }
-    
+
     // Move trimmed string to beginning
     if (start != str) {
         memmove(str, start, strlen(start) + 1);
     }
-    
+
     // Remove trailing whitespace
     size_t len = strlen(str);
     while (len > 0 && (str[len - 1] == ' ' || str[len - 1] == '\t')) {
@@ -103,40 +97,45 @@ void trim_whitespace(char *str) {
  */
 void run_practice_session(const category_selection_t *selection) {
     session_stats_t stats = {0}; // Initialize statistics
+    persistent_stats_t persistent_stats;
+    load_persistent_stats(&persistent_stats);
     float user_answer;
     bool continue_session = true;
     int questions_asked = 0;
-    
+
     printf("Practice Session Started!\n");
     printf("─────────────────────────\n");
     printf("• Enter a number to answer questions\n");
     printf("• Type 'skip' to skip a question\n");
     printf("• Type 'quit' or 'exit' to return to main menu\n\n");
-    
+
     while (continue_session) {
         // Generate a new question
         question_t question = generate_question(selection);
-        
+
         // Check if question generation failed
         if (strstr(question.question_text, "Error:") != NULL) {
             printf("%s\n", question.question_text);
             break;
         }
-        
+
         // Display the question with improved formatting
         questions_asked++;
         printf("\n[Question %d] %s\n", questions_asked, question.question_text);
         printf("═══════════════════════════════════════\n");
-        
+
         // Get user's answer
         int answer_result = get_numeric_answer(&user_answer);
         if (answer_result == 1) {
             // Valid number entered - check the answer and provide feedback
-            bool correct = check_answer(&question, user_answer);
-            
-            // Update statistics
-            update_stats(&stats, &question, correct);
-            
+            answer_result_t answer_check = check_answer(&question, user_answer);
+
+            // Update session statistics
+            update_stats(&stats, &question, answer_check.is_correct);
+
+            // Update persistent statistics
+            update_persistent_stats(&persistent_stats, &question, answer_check.percent_error, answer_check.is_correct);
+
             printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
         } else if (answer_result == -1) {
             // User wants to quit/exit - end the session
@@ -152,7 +151,10 @@ void run_practice_session(const category_selection_t *selection) {
             printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
         }
     }
-    
+
+    // Save persistent statistics
+    save_persistent_stats(&persistent_stats);
+
     // Print session summary
     print_session_summary(&stats);
 }
@@ -219,22 +221,22 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    
+
     char *user_input;
-    
+
     // Initialize random number generator
     init_random_seed();
-    
+
     printf("Welcome to Metric Trainer!\n");
     if (g_easy_mode) {
         printf("Easy Mode: Questions will use simple numbers (1, 5, 10, 15, 20...)\n");
     } else if (g_whole_numbers_mode) {
         printf("Whole Numbers Mode: Questions will use only whole numbers\n");
     }
-    
+
     while (1) {
         show_menu();
-        
+
         user_input = get_user_input();
         if (user_input == NULL) {
             // get_user_input() already printed error message if needed
@@ -247,16 +249,16 @@ int main(int argc, char *argv[]) {
             printf("Please try again.\n\n");
             continue;
         }
-        
+
         trim_whitespace(user_input);
-        
+
         // Convert to lowercase for easier comparison
         for (int i = 0; user_input[i]; i++) {
             if (user_input[i] >= 'A' && user_input[i] <= 'Z') {
                 user_input[i] = user_input[i] + ('a' - 'A');
             }
         }
-        
+
         // Handle special cases first
         if (strcmp(user_input, "quit") == 0 || strcmp(user_input, "exit") == 0) {
             printf("Goodbye!\n");
@@ -264,7 +266,7 @@ int main(int argc, char *argv[]) {
         } else if (strcmp(user_input, "help") == 0 || strcmp(user_input, "h") == 0 || strcmp(user_input, "?") == 0) {
             printf("\nMetric Trainer - Complete Help Guide\n");
             printf("═══════════════════════════════════════════════════════════\n");
-            
+
             printf("\nCATEGORY SELECTION\n");
             printf("──────────────────\n");
             printf("Choose conversion categories for practice:\n");
@@ -272,47 +274,44 @@ int main(int argc, char *argv[]) {
             printf("  b = Weight       (pounds <-> kg, ounces <-> grams)\n");
             printf("  c = Temperature  (Celsius <-> Fahrenheit)\n");
             printf("  d = Volume       (gallons <-> liters, cups <-> ml, fl oz conversions)\n");
-            
+
             printf("\nINPUT OPTIONS\n");
             printf("─────────────\n");
             printf("  • Single category:     'a', 'b', 'c', or 'd'\n");
             printf("  • Multiple categories: 'ac', 'bd', 'abc'\n");
             printf("  • All categories:      'all' or 'abcd'\n");
             printf("  • Get this help:       'help', 'h', or '?'\n");
+            printf("  • View statistics:     'stats'\n");
             printf("  • Exit program:        'quit' or 'exit'\n");
-            
+
             printf("\nPRACTICE SESSION\n");
             printf("────────────────\n");
             printf("Practice sessions continue until you type 'quit' or 'exit'.");
-            
+
             printf("\nDuring practice:\n");
             printf("  • Enter numbers (decimals OK): 5.2, 100, 42\n");
             printf("  • Skip difficult questions:    'skip'\n");
             printf("  • End session early:           'quit' or 'exit'\n");
-            
-            printf("\n\nFEATURES\n");
-            printf("────────\n");
-            printf("  • Realistic conversion ranges and tolerances\n");
-            printf("  • Educational feedback and hints for wrong answers\n");
-            printf("  • Session statistics with category breakdowns\n");
-            printf("  • Progress tracking within sessions\n");
-            
+
             printf("\nEXAMPLES\n");
             printf("────────\n");
             printf("  'a'    → Practice distance conversions only\n");
             printf("  'cd'   → Practice temperature and volume together\n");
             printf("  'all'  → Practice all conversion types\n");
-            
+
             printf("\n═══════════════════════════════════════════════════════════\n");
             printf("Ready to start? Enter your category choice above!\n\n");
             continue;
+        } else if (strcmp(user_input, "stats") == 0) {
+            show_persistent_stats();
+            continue;
         }
-        
+
         // Try to parse the category selection
         category_selection_t selection;
         if (parse_category_input(user_input, &selection)) {
             printf("Selected categories:\n");
-            
+
             if (selection.active[CATEGORY_DISTANCE]) {
                 printf("  Distance (miles <-> km, feet <-> m, inches <-> cm)\n");
             }
@@ -325,7 +324,7 @@ int main(int argc, char *argv[]) {
             if (selection.active[CATEGORY_VOLUME]) {
                 printf("  Volume (gallons <-> liters, cups <-> ml, fl oz conversions)\n");
             }
-            
+
             printf("\nTotal: %d categories selected\n", selection.num_active);
             printf("Starting practice session...\n\n");
             run_practice_session(&selection);
@@ -343,6 +342,6 @@ int main(int argc, char *argv[]) {
             printf("Tip: Try 'help' for detailed explanations\n\n");
         }
     }
-    
+
     return 0;
 }
