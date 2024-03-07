@@ -142,14 +142,10 @@ answer_result_t check_answer(const question_t *question, float user_answer) {
     bool is_correct = difference <= question->tolerance;
     float percent_error = (difference / question->correct_answer) * 100.0f;
 
-    printf("Correct answer: %.2f\n", question->correct_answer);
+    printf("Correct answer: %.2f (±%.2f %s)\n", question->correct_answer, question->tolerance, question->to_unit);
 
     if (is_correct) {
-        printf("Correct!");
-        if (difference > 0.01f) {
-            printf(" (%.1f%% error)", percent_error);
-        }
-        printf("\n");
+        printf("Correct!\n");
     } else {
         printf("Error: %.1f%% off target\n", percent_error);
     }
