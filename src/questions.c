@@ -118,7 +118,8 @@ question_t generate_question(const category_selection_t *selection) {
     answer = round_to_precision(answer, 2); // Allow more precision in answers
 
     // Calculate tolerance for this question
-    float tolerance = answer * (conv->tolerance_percent / 100.0f);
+    float tolerance_percent = g_easy_mode ? 5.0f : conv->tolerance_percent;
+    float tolerance = answer * (tolerance_percent / 100.0f);
     if (tolerance < 0.1f) tolerance = 0.1f; // Minimum tolerance
 
     // Fill in the question structure
