@@ -442,11 +442,11 @@ static const conversion_info_t weight_conversions[] = {
 static const conversion_info_t temperature_conversions[] = {
     {
         "degrees Fahrenheit", "F", "degrees Celsius", "C",
-        fahrenheit_to_celsius, 0.0f, 100.0f, 1.5f
+        fahrenheit_to_celsius, -40.0f, 300.0f, 1.5f
     },
     {
         "degrees Celsius", "C", "degrees Fahrenheit", "F",
-        celsius_to_fahrenheit, 0.0f, 40.0f, 1.5f
+        celsius_to_fahrenheit, -40.0f, 150.0f, 1.5f
     },
 };
 
