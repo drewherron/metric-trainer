@@ -717,3 +717,43 @@ void show_persistent_stats(void) {
         printf("\n");
     }
 }
+
+void show_conversion_reference(void) {
+    printf("\nConversion Reference - All Formulas\n");
+    printf("═══════════════════════════════════\n\n");
+
+    // Distance conversions
+    printf("DISTANCE CONVERSIONS\n");
+    printf("────────────────────\n");
+    printf("Miles to kilometers:     miles × 8/5 = kilometers  (or × 1.609344)\n");
+    printf("Kilometers to miles:     kilometers × 5/8 = miles  (or ÷ 1.609344)\n");
+    printf("Inches to centimeters:   inches × 2.54 = centimeters\n");
+    printf("Centimeters to inches:   centimeters ÷ 2.54 = inches\n");
+    printf("Feet to meters:          feet × 0.3048 = meters\n");
+    printf("Meters to feet:          meters ÷ 0.3048 = feet\n");
+
+    printf("\nWEIGHT CONVERSIONS\n");
+    printf("──────────────────\n");
+    printf("Pounds to kilograms:     pounds × 0.453592 = kilograms\n");
+    printf("Kilograms to pounds:     kilograms ÷ 0.453592 = pounds\n");
+    printf("Ounces to grams:         ounces × 28.3495 = grams\n");
+    printf("Grams to ounces:         grams ÷ 28.3495 = ounces\n");
+
+    printf("\nTEMPERATURE CONVERSIONS\n");
+    printf("───────────────────────\n");
+    printf("Fahrenheit to Celsius:   (°F - 32) × 5/9 = °C\n");
+    printf("Celsius to Fahrenheit:   (°C × 9/5) + 32 = °F\n");
+
+    printf("\nVOLUME CONVERSIONS\n");
+    printf("──────────────────\n");
+    printf("Gallons to liters:       gallons × 3.78541 = liters\n");
+    printf("Liters to gallons:       liters ÷ 3.78541 = gallons\n");
+    printf("Cups to milliliters:     cups × 236.588 = milliliters\n");
+    printf("Milliliters to cups:     milliliters ÷ 236.588 = cups\n");
+    printf("Fluid ounces to ml:      fl oz × 29.5735 = milliliters\n");
+    printf("Milliliters to fl oz:    milliliters ÷ 29.5735 = fl oz\n");
+
+    printf("\n═══════════════════════════════════\n");
+    printf("Note: These formulas show the exact mathematical relationships.\n");
+    printf("During practice, answers within the tolerance range are accepted.\n\n");
+}

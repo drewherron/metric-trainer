@@ -249,4 +249,9 @@ void update_persistent_stats(persistent_stats_t *persistent, const question_t *q
  */
 void show_persistent_stats(void);
 
+/**
+ * Display all conversion formulas and reference information
+ */
+void show_conversion_reference(void);
+
 #endif

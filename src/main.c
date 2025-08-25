@@ -282,6 +282,7 @@ int main(int argc, char *argv[]) {
             printf("  • All categories:      'all' or 'abcd'\n");
             printf("  • Get this help:       'help', 'h', or '?'\n");
             printf("  • View statistics:     'stats'\n");
+            printf("  • View formulas:       'reference'\n");
             printf("  • Exit program:        'quit' or 'exit'\n");
 
             printf("\nPRACTICE SESSION\n");
@@ -304,6 +305,9 @@ int main(int argc, char *argv[]) {
             continue;
         } else if (strcmp(user_input, "stats") == 0) {
             show_persistent_stats();
+            continue;
+        } else if (strcmp(user_input, "reference") == 0) {
+            show_conversion_reference();
             continue;
         }
 
