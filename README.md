@@ -28,9 +28,12 @@ Once running, type:
 - `all` - Practice all categories
 - `help` - Show detailed help menu
 - `stats` - View persistent statistics by category
+- `reference` - View conversion formulas
 - `quit` - Exit the program
 
-Or you can combine letters to practice multiple categories (e.g. `ab` for distance and temperature).
+Or you can combine letters to practice multiple categories (e.g., `ab` for distance and temperature).
+
+To reset the statistics, just delete the `.metric_trainer_stats` file and restart the program.
 
 ## Building
 
